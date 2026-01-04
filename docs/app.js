@@ -116,8 +116,8 @@ function render(query) {
 }
 
 function escapeHtml(s) {
-  return (s || "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  return (s || "").replace(/[&<>"'`]/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;","`":"&#96;"
   }[c]));
 }
 
