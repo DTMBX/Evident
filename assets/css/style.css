@@ -43,6 +43,9 @@
   --transition-fast: 0.2s var(--ease-smooth);
   --transition-base: 0.3s var(--ease-smooth);
   --transition-slow: 0.5s var(--ease-smooth);
+  
+  /* Borders */
+  --border: rgba(0, 0, 0, 0.05);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1416,6 +1419,7 @@ h1, h2, h3, h4, h5, h6 {
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+    --border: rgba(255, 255, 255, 0.05);
   }
   
   body {
