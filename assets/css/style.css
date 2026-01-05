@@ -1498,10 +1498,14 @@ h1, h2, h3, h4, h5, h6 {
    ========================================================================== */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .md{
 =======
 .md {
 >>>>>>> origin/main
+=======
+.md {
+>>>>>>> origin/DTB396-patch-14
   max-width: 72ch;
   margin: 0 auto;
   padding: clamp(1.5rem, 4vw, 3rem);
@@ -1510,12 +1514,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Header */
 <<<<<<< HEAD
+<<<<<<< HEAD
 .md-header{
+=======
+.md-header {
+>>>>>>> origin/DTB396-patch-14
   margin-bottom: 2.5rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   padding-bottom: 1.5rem;
 }
 
+<<<<<<< HEAD
 .md-title{
 =======
 .md-header {
@@ -1526,6 +1535,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .md-title {
 >>>>>>> origin/main
+=======
+.md-title {
+>>>>>>> origin/DTB396-patch-14
   font-size: clamp(1.9rem, 3vw, 2.6rem);
   line-height: 1.15;
   letter-spacing: -.02em;
@@ -1535,19 +1547,27 @@ h1, h2, h3, h4, h5, h6 {
 .md-lead {
   font-size: 1.1rem;
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: var(--text-muted);
 =======
   color: var(--muted);
 >>>>>>> origin/main
+=======
+  color: var(--muted);
+>>>>>>> origin/DTB396-patch-14
   max-width: 60ch;
 }
 
 /* Content */
 <<<<<<< HEAD
+<<<<<<< HEAD
 .md-content h2{
 =======
 .md-content h2 {
 >>>>>>> origin/main
+=======
+.md-content h2 {
+>>>>>>> origin/DTB396-patch-14
   margin-top: 3rem;
   margin-bottom: 1rem;
   font-size: 1.6rem;
@@ -1556,24 +1576,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .md-content h3{
 =======
 .md-content h3 {
 >>>>>>> origin/main
+=======
+.md-content h3 {
+>>>>>>> origin/DTB396-patch-14
   margin-top: 2rem;
   margin-bottom: .75rem;
   font-size: 1.25rem;
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .md-content p{
 =======
 .md-content p {
 >>>>>>> origin/main
+=======
+.md-content p {
+>>>>>>> origin/DTB396-patch-14
   margin: 1rem 0;
 }
 
 .md-content ul,
+<<<<<<< HEAD
 <<<<<<< HEAD
 .md-content ol{
   margin: 1rem 0 1rem 1.25rem;
@@ -1587,6 +1616,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .md-content li {
 >>>>>>> origin/main
+=======
+.md-content ol {
+  margin: 1rem 0 1rem 1.25rem;
+}
+
+.md-content li {
+>>>>>>> origin/DTB396-patch-14
   margin: .4rem 0;
 }
 
@@ -1600,22 +1636,28 @@ h1, h2, h3, h4, h5, h6 {
 
 .md-content pre {
 <<<<<<< HEAD
+<<<<<<< HEAD
   background: var(--card);
   border: 1px solid var(--border);
+=======
+  background: var(--card);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+>>>>>>> origin/DTB396-patch-14
   padding: 1rem;
   overflow-x: auto;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 /* Footer */
-.md-footer{
+.md-footer {
   margin-top: 4rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.md-meta{
+.md-meta {
   font-size: .9rem;
+<<<<<<< HEAD
   color: var(--text-muted);
 =======
   background: var(--surface);
@@ -1636,4 +1678,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: .9rem;
   color: var(--muted);
 >>>>>>> origin/main
+=======
+  color: var(--muted);
+>>>>>>> origin/DTB396-patch-14
 }
