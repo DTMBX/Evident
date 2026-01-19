@@ -6,9 +6,11 @@ labels: bug
 ---
 
 ## Description
+
 What happened?
 
 ## Steps to Reproduce
+
 1.
 2.
 3.
@@ -16,6 +18,7 @@ What happened?
 ## Expected Behavior
 
 ## Environment
+
 - OS:
 - Python version:
 - Node version (if applicable):

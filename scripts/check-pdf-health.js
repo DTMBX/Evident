@@ -1,20 +1,20 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import process from 'node:process';
+import fs from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
 
 const repoRoot = process.cwd();
 
 function parseArgs(argv) {
   const args = {
     minBytes: 4096,
-    outDir: path.join('_internal', 'reports'),
+    outDir: path.join("_internal", "reports"),
   };
   for (let i = 2; i < argv.length; i += 1) {
     const arg = argv[i];
-    if (arg === '--min-bytes') {
+    if (arg === "--min-bytes") {
       args.minBytes = Number(argv[i + 1]);
       i += 1;
-    } else if (arg === '--out') {
+    } else if (arg === "--out") {
       args.outDir = argv[i + 1];
       i += 1;
     }
@@ -48,17 +48,17 @@ async function walk(dirPath) {
 }
 
 function toPosix(p) {
-  return p.split(path.sep).join('/');
+  return p.split(path.sep).join("/");
 }
 
 function decodeHtmlEntities(input) {
-  return input.replaceAll('&amp;', '&');
+  return input.replaceAll("&amp;", "&");
 }
 
 function normalizeUrl(rawUrl) {
   const decoded = decodeHtmlEntities(rawUrl).trim();
-  const withoutHash = decoded.split('#')[0];
-  const withoutQuery = withoutHash.split('?')[0];
+  const withoutHash = decoded.split("#")[0];
+  const withoutQuery = withoutHash.split("?")[0];
   return withoutQuery;
 }
 
@@ -73,12 +73,12 @@ function safeDecodeUriPath(urlPath) {
 function isSkippableUrl(url) {
   const lower = url.toLowerCase();
   return (
-    lower.startsWith('http://') ||
-    lower.startsWith('https://') ||
-    lower.startsWith('//') ||
-    lower.startsWith('mailto:') ||
-    lower.startsWith('tel:') ||
-    lower.startsWith('data:')
+    lower.startsWith("http://") ||
+    lower.startsWith("https://") ||
+    lower.startsWith("//") ||
+    lower.startsWith("mailto:") ||
+    lower.startsWith("tel:") ||
+    lower.startsWith("data:")
   );
 }
 
@@ -101,29 +101,41 @@ async function walkFiles(dirPath, extensions) {
 }
 
 async function scanBuiltSiteForPdfRefs(siteDirAbs) {
-  const files = await walkFiles(siteDirAbs, new Set(['.html', '.xml', '.json']));
-  const pdfRegex = /(?:href|src)=["']([^"']+?\.pdf(?:\?[^"']*)?(?:#[^"']*)?)["']/gi;
+  const files = await walkFiles(
+    siteDirAbs,
+    new Set([".html", ".xml", ".json"]),
+  );
+  const pdfRegex =
+    /(?:href|src)=["']([^"']+?\.pdf(?:\?[^"']*)?(?:#[^"']*)?)["']/gi;
 
   const linkedSiteRelPaths = new Set();
   const foundCountByUrl = new Map();
 
   for (const file of files) {
-    const content = await fs.readFile(file, 'utf8');
+    const content = await fs.readFile(file, "utf8");
     let match;
     while ((match = pdfRegex.exec(content)) !== null) {
       const rawUrl = match[1];
       const normalized = normalizeUrl(rawUrl);
-      if (!normalized || isSkippableUrl(normalized) || normalized.includes('{{')) continue;
+      if (
+        !normalized ||
+        isSkippableUrl(normalized) ||
+        normalized.includes("{{")
+      )
+        continue;
 
       const normalizedDecoded = safeDecodeUriPath(normalized);
-      foundCountByUrl.set(normalizedDecoded, (foundCountByUrl.get(normalizedDecoded) ?? 0) + 1);
+      foundCountByUrl.set(
+        normalizedDecoded,
+        (foundCountByUrl.get(normalizedDecoded) ?? 0) + 1,
+      );
 
-      const resolvedAbs = normalizedDecoded.startsWith('/')
+      const resolvedAbs = normalizedDecoded.startsWith("/")
         ? path.join(siteDirAbs, normalizedDecoded.slice(1))
         : path.resolve(path.dirname(file), normalizedDecoded);
 
       const siteRel = path.relative(siteDirAbs, resolvedAbs);
-      if (siteRel.startsWith('..')) continue;
+      if (siteRel.startsWith("..")) continue;
       linkedSiteRelPaths.add(toPosix(siteRel));
     }
   }
@@ -131,26 +143,30 @@ async function scanBuiltSiteForPdfRefs(siteDirAbs) {
   return {
     totalPagesScanned: files.length,
     uniquePdfUrls: foundCountByUrl.size,
-    totalPdfReferences: Array.from(foundCountByUrl.values()).reduce((a, b) => a + b, 0),
+    totalPdfReferences: Array.from(foundCountByUrl.values()).reduce(
+      (a, b) => a + b,
+      0,
+    ),
     linkedSiteRelPaths,
   };
 }
 
 async function loadBrokenTodoPaths() {
   const candidatePaths = [
-    path.join(repoRoot, '_internal', 'BROKEN-PDFS-TODO.md'),
-    path.join(repoRoot, '_docs', 'BROKEN-PDFS-TODO.md'),
+    path.join(repoRoot, "_internal", "BROKEN-PDFS-TODO.md"),
+    path.join(repoRoot, "_docs", "BROKEN-PDFS-TODO.md"),
   ];
 
   for (const todoPath of candidatePaths) {
     if (!(await exists(todoPath))) continue;
-    const text = await fs.readFile(todoPath, 'utf8');
+    const text = await fs.readFile(todoPath, "utf8");
 
     const matches = new Set();
     // Backtick-wrapped paths
     for (const m of text.matchAll(/`([^`]+?\.pdf)`/gi)) matches.add(m[1]);
     // Plain-text case paths (e.g. cases/<slug>/filings/<file>.pdf)
-    for (const m of text.matchAll(/\b(?:cases|assets)\/[^\s`]+?\.pdf\b/gi)) matches.add(m[0]);
+    for (const m of text.matchAll(/\b(?:cases|assets)\/[^\s`]+?\.pdf\b/gi))
+      matches.add(m[0]);
 
     if (matches.size > 0) return Array.from(matches);
   }
@@ -170,7 +186,7 @@ async function statPdf(filePath) {
 async function main() {
   const args = parseArgs(process.argv);
 
-  const siteDirAbs = path.join(repoRoot, '_site');
+  const siteDirAbs = path.join(repoRoot, "_site");
   const sitePdfRefs = (await exists(siteDirAbs))
     ? await scanBuiltSiteForPdfRefs(siteDirAbs)
     : {
@@ -181,8 +197,8 @@ async function main() {
       };
 
   const scanRoots = [
-    path.join(repoRoot, 'cases'),
-    path.join(repoRoot, 'assets', 'cases'),
+    path.join(repoRoot, "cases"),
+    path.join(repoRoot, "assets", "cases"),
   ];
 
   const allFiles = [];
@@ -190,7 +206,7 @@ async function main() {
     allFiles.push(...(await walk(root)));
   }
 
-  const pdfFiles = allFiles.filter((p) => p.toLowerCase().endsWith('.pdf'));
+  const pdfFiles = allFiles.filter((p) => p.toLowerCase().endsWith(".pdf"));
 
   const stats = [];
   for (const pdf of pdfFiles) {
@@ -220,15 +236,22 @@ async function main() {
         linkedFromSite: sitePdfRefs.linkedSiteRelPaths.has(relPosix),
       });
     } else {
-      todoStatus.push({ ref: rel, exists: false, bytes: null, linkedFromSite: false });
+      todoStatus.push({
+        ref: rel,
+        exists: false,
+        bytes: null,
+        linkedFromSite: false,
+      });
     }
   }
 
-  const outDirAbs = path.isAbsolute(args.outDir) ? args.outDir : path.join(repoRoot, args.outDir);
+  const outDirAbs = path.isAbsolute(args.outDir)
+    ? args.outDir
+    : path.join(repoRoot, args.outDir);
   await fs.mkdir(outDirAbs, { recursive: true });
 
-  const outJson = path.join(outDirAbs, 'pdf-health.json');
-  const outMd = path.join(outDirAbs, 'pdf-health.md');
+  const outJson = path.join(outDirAbs, "pdf-health.json");
+  const outMd = path.join(outDirAbs, "pdf-health.md");
 
   await fs.writeFile(
     outJson,
@@ -239,7 +262,7 @@ async function main() {
         pdfCount: pdfFiles.length,
         tinyCount: tiny.length,
         siteScan: {
-          siteDir: '_site',
+          siteDir: "_site",
           pagesScanned: sitePdfRefs.totalPagesScanned,
           pdfReferences: sitePdfRefs.totalPdfReferences,
           uniquePdfUrls: sitePdfRefs.uniquePdfUrls,
@@ -250,59 +273,65 @@ async function main() {
       null,
       2,
     ),
-    'utf8',
+    "utf8",
   );
 
   const lines = [];
-  lines.push('# PDF Health Report');
-  lines.push('');
+  lines.push("# PDF Health Report");
+  lines.push("");
   lines.push(`Generated: ${new Date().toISOString()}`);
   lines.push(`Min bytes threshold: ${args.minBytes}`);
   lines.push(`PDF files scanned: ${pdfFiles.length}`);
   lines.push(`Tiny/placeholder PDFs (< threshold): ${tiny.length}`);
-  lines.push('');
+  lines.push("");
 
-  lines.push('## TODO References Status');
-  lines.push('');
+  lines.push("## TODO References Status");
+  lines.push("");
   if (todoStatus.length === 0) {
-    lines.push('No TODO references found.');
+    lines.push("No TODO references found.");
   } else {
     for (const item of todoStatus) {
       if (!item.exists) lines.push(`- MISSING: ${toPosix(item.ref)}`);
-      else lines.push(`- OK (${item.bytes} bytes)${item.linkedFromSite ? ' [LINKED]' : ''}: ${toPosix(item.ref)}`);
+      else
+        lines.push(
+          `- OK (${item.bytes} bytes)${item.linkedFromSite ? " [LINKED]" : ""}: ${toPosix(item.ref)}`,
+        );
     }
   }
 
-  lines.push('');
-  lines.push('## Tiny PDFs (Linked vs Not Linked)');
-  lines.push('');
+  lines.push("");
+  lines.push("## Tiny PDFs (Linked vs Not Linked)");
+  lines.push("");
   const tinyLinked = tiny.filter((t) => t.linkedFromSite);
   const tinyUnlinked = tiny.filter((t) => !t.linkedFromSite);
   lines.push(`- Linked from built site: ${tinyLinked.length}`);
   lines.push(`- Not linked from built site: ${tinyUnlinked.length}`);
 
-  lines.push('');
-  lines.push('## Smallest PDFs');
-  lines.push('');
+  lines.push("");
+  lines.push("## Smallest PDFs");
+  lines.push("");
   if (tiny.length === 0) {
-    lines.push('No tiny PDFs detected.');
+    lines.push("No tiny PDFs detected.");
   } else {
     for (const item of tiny.slice(0, 200)) {
-      lines.push(`- ${item.bytes} bytes${item.linkedFromSite ? ' [LINKED]' : ''}: ${toPosix(item.path)}`);
+      lines.push(
+        `- ${item.bytes} bytes${item.linkedFromSite ? " [LINKED]" : ""}: ${toPosix(item.path)}`,
+      );
     }
   }
 
-  lines.push('');
+  lines.push("");
   lines.push(`JSON: ${toPosix(path.relative(repoRoot, outJson))}`);
   lines.push(`MD: ${toPosix(path.relative(repoRoot, outMd))}`);
 
-  await fs.writeFile(outMd, `${lines.join('\n')}\n`, 'utf8');
+  await fs.writeFile(outMd, `${lines.join("\n")}\n`, "utf8");
 
   console.log(`Wrote ${path.relative(repoRoot, outMd)}`);
   console.log(`Wrote ${path.relative(repoRoot, outJson)}`);
 
   // Exit non-zero if any TODO refs missing OR tiny PDFs exist
-  if (tiny.length > 0 || todoStatus.some((t) => !t.exists)) process.exitCode = 1;
+  if (tiny.length > 0 || todoStatus.some((t) => !t.exists))
+    process.exitCode = 1;
 }
 
 await main();

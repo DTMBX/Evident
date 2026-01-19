@@ -41,6 +41,7 @@ This page is a documentation index. It does not assert findings, legal conclusio
 ## OPRAmachine Public Record
 
 This request is publicly tracked on OPRAmachine:
+
 - **View this request:** [Atlantic County OPRA Requests]({{ page.opramachine_url }})
 - **View all requests by filer:** [X (Devon Tyler of the Barber-Materio Family)]({{ page.opramachine_user }})
 
@@ -63,8 +64,6 @@ This request is publicly tracked on OPRAmachine:
 See the timeline below for filing dates, extensions, and productions as they occur.
 
 ## Timeline
-
-
 
 ## Documents
 

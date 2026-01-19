@@ -3,22 +3,22 @@
  * Handles product filtering and dynamic display
  */
 
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
   // Get products from embedded data (loaded by Jekyll)
   const productsData = window.stewardshipProducts || null;
 
   // Create product card HTML
   function createProductCard(product) {
-    const card = document.createElement('article');
-    card.className = 'product-card';
+    const card = document.createElement("article");
+    card.className = "product-card";
     card.dataset.category = product.category;
-    
-    const personalNote = product.personal_note 
-      ? `<p class="product-note">"${escapeHtml(product.personal_note)}"</p>` 
-      : '';
-    
+
+    const personalNote = product.personal_note
+      ? `<p class="product-note">"${escapeHtml(product.personal_note)}"</p>`
+      : "";
+
     card.innerHTML = `
       <div class="product-category-badge">${escapeHtml(product.category)}</div>
       <h3 class="product-title">${escapeHtml(product.title)}</h3>
@@ -31,64 +31,64 @@
         View on Amazon
       </a>
     `;
-    
+
     return card;
   }
 
   // Escape HTML to prevent XSS
   function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
+    if (!text) return "";
+    const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
   }
 
   // Filter products by category
   function filterProducts(category) {
-    const cards = document.querySelectorAll('.product-card');
-    
-    cards.forEach(card => {
-      if (category === 'all' || card.dataset.category === category) {
-        card.classList.remove('hidden');
+    const cards = document.querySelectorAll(".product-card");
+
+    cards.forEach((card) => {
+      if (category === "all" || card.dataset.category === category) {
+        card.classList.remove("hidden");
       } else {
-        card.classList.add('hidden');
+        card.classList.add("hidden");
       }
     });
   }
 
   // Initialize page
   function init() {
-    const grid = document.getElementById('resourcesGrid');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    
+    const grid = document.getElementById("resourcesGrid");
+    const filterBtns = document.querySelectorAll(".filter-btn");
+
     // If products loaded, render them
     if (productsData && grid) {
       // Clear loading message
-      grid.innerHTML = '';
-      
+      grid.innerHTML = "";
+
       // Flatten products from all categories
       const allProducts = [];
-      Object.keys(productsData).forEach(category => {
-        if (category === '_metadata') return; // Skip metadata
+      Object.keys(productsData).forEach((category) => {
+        if (category === "_metadata") return; // Skip metadata
         if (Array.isArray(productsData[category])) {
-          productsData[category].forEach(product => {
+          productsData[category].forEach((product) => {
             allProducts.push({ ...product, category });
           });
         }
       });
-      
+
       // Sort by date_added (newest first)
       allProducts.sort((a, b) => {
         const dateA = a.date_added ? new Date(a.date_added) : new Date(0);
         const dateB = b.date_added ? new Date(b.date_added) : new Date(0);
         return dateB - dateA;
       });
-      
+
       // Render cards
-      allProducts.forEach(product => {
+      allProducts.forEach((product) => {
         grid.appendChild(createProductCard(product));
       });
-      
+
       // If no products, show message
       if (allProducts.length === 0) {
         grid.innerHTML = `
@@ -107,14 +107,14 @@
         </div>
       `;
     }
-    
+
     // Set up filter buttons
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
+    filterBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
         // Update active state
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
+        filterBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
         // Filter products
         const category = btn.dataset.category;
         filterProducts(category);
@@ -123,8 +123,8 @@
   }
 
   // Run when DOM ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }

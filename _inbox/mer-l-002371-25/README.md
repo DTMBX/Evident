@@ -17,6 +17,7 @@ git push
 ## What Happens Next
 
 GitHub Actions will:
+
 1. Detect PDFs in this directory
 2. Move them to `cases/mer-l-002371-25/filings/`
 3. Rename to standard format: `YYYYMMDD-description.pdf`

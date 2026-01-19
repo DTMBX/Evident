@@ -18,7 +18,8 @@
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && header.classList.contains("nav-open")) setOpen(false);
+    if (e.key === "Escape" && header.classList.contains("nav-open"))
+      setOpen(false);
   });
 
   nav.addEventListener("click", (e) => {

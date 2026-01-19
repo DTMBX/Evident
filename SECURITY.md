@@ -7,6 +7,7 @@ Please report security issues by email:
 **BarberCamX@ProtonMail.com**
 
 Include:
+
 - a clear description of the issue
 - affected file(s) / component(s)
 - steps to reproduce (or proof-of-concept details if safe)

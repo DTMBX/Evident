@@ -1,13 +1,12 @@
-- id: '-order-granted'
-  date: ''
+- id: 2025-11-05-order-granted
+  date: "2025-11-05"
   type: Order
-  title: order granted
+  title: Order Granted
   file: /cases/pcr-appeal-2024-union/filings/order-granted.pdf
   notes: Scanned by audit
-- id: '-order-granted-ifp'
-  date: ''
+- id: 2025-11-05-order-granted-ifp
+  date: "2025-11-05"
   type: Order
-  title: order granted ifp
+  title: Order Granted In Forma Pauperis
   file: /cases/pcr-appeal-2024-union/filings/order-granted-ifp.pdf
-  court_stamp: null
   notes: Scanned by audit

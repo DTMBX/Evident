@@ -16,17 +16,20 @@ Faith Frontier Ecclesiastical Trust will offer **dignified transitional housing*
 ### What We Offer
 
 **Immediate:**
+
 - Safe, clean transitional housing
 - Basic needs support (food, clothing, hygiene)
 - Case management and goal planning
 
 **Ongoing:**
+
 - **Job training** in construction, land stewardship, or administrative roles
 - **Skills development** through hands-on property maintenance
 - **Faith-based support** (optional, never required)
 - **Pathway to permanent housing** and economic stability
 
 **Long-term:**
+
 - **Stewardship roles** - become caretaker of Faith Frontier properties
 - **Employment opportunities** with Tillerstead LLC or partner organizations
 - **Community integration** - mentorship, recovery support, legal advocacy
@@ -53,17 +56,20 @@ Faith Frontier Ecclesiastical Trust will offer **dignified transitional housing*
 ### Why Partner with Faith Frontier?
 
 **Cost-Effective:**
+
 - **Lower per-person costs** than traditional shelter systems
 - **Reduced recidivism** through employment and community ties
 - **Long-term housing stability** beyond emergency placement
 
 **Proven Track Record:**
+
 - Documented case management through court records
 - Transparent governance and financial accountability
 - Licensed minister with pastoral care background
 - Property stewardship model already operational
 
 **Comprehensive Services:**
+
 - **Housing**: Transitional and permanent placement options
 - **Employment**: Job training, apprenticeships, direct placement
 - **Support**: Recovery, mental health referrals, legal advocacy
@@ -79,6 +85,7 @@ Faith Frontier can serve as **approved placement partner** for:
 - **Reentry programs** for formerly incarcerated individuals
 
 **Our Commitment:**
+
 - Monthly reporting on participant progress
 - Transparent financial documentation
 - Collaboration with caseworkers and social services
@@ -96,7 +103,7 @@ Faith Frontier can serve as **approved placement partner** for:
 
 ## Case Studies & Outcomes
 
-*(To be added as program develops)*
+_(To be added as program develops)_
 
 - Number of individuals housed: **[tracking begins upon funding]**
 - Employment placement rate: **[TBD]**
@@ -137,6 +144,7 @@ Faith Frontier doesn't just provide beds—we provide **purpose, training, and a
 ---
 
 **Related:**
+
 - [Stewardship Pathway](/stewardship/) - Learn how housing residents become property stewards
 - [Ministry Charter](/essays/ministry-charter/) - Our faith-based foundation
 - [Manifesto](/manifesto/) - Our public commitments to equity and justice

@@ -6,6 +6,7 @@ status: Active
 last_updated: 2025-12-29
 category: civil / attorney misconduct / tort / NJCFA
 ---
+
 **Status:** Active â€” Motion to Dismiss Pending
 
 ### Operative Pleading
@@ -39,8 +40,8 @@ The SAC was submitted to clarify and respond to arguments raised in Defendantsâ€
 
 The SAC expressly applies the New Jersey exoneration doctrine as articulated in:
 
-- *McKnight v. Office of the Public Defender*, 197 N.J. 180 (2008)  
-- *Rogers v. Cape May County Office of the Public Defender*, 208 N.J. 414 (2011)
+- _McKnight v. Office of the Public Defender_, 197 N.J. 180 (2008)
+- _Rogers v. Cape May County Office of the Public Defender_, 208 N.J. 414 (2011)
 
 Consistent with those authorities:
 
@@ -91,4 +92,3 @@ Based on New Jersey practice, the Court may:
 Dismissal with prejudice of the SAC would exceed the scope of the motion as filed.
 
 ---
-

@@ -30,48 +30,47 @@ This administrative record preserves OPRA requests concerning executive clemency
 - **Requests by filer:** [User profile]({{ page.opramachine_user }})
 
 > Note: Add the direct request URL here once available on OPRAmachine.
+>
 > <!-- Example:
 > - **This request:** [Request thread](PASTE_REQUEST_URL_HERE)
 > -->
 
 ## Current status
 
-- **Opened:** December 18, 2025  
-- **Status:** {{ page.status }}  
-- **Last updated:** {{ page.last_updated }}  
+- **Opened:** December 18, 2025
+- **Status:** {{ page.status }}
+- **Last updated:** {{ page.last_updated }}
 
 ## Timeline
-
-
 
 ## Documents and productions
 
 This repository separates **working files** from **public releases**:
 
-- **Internal working set (not published):** `_opra/governor-clemency-public-safety-2025/`  
+- **Internal working set (not published):** `_opra/governor-clemency-public-safety-2025/`
 - **Public releases (published):** `{{ page.assets_dir }}/`
 
 ### Requests filed (outgoing)
 
-Outgoing request letters, clarifications, and fee waiver materials.  
+Outgoing request letters, clarifications, and fee waiver materials.
 
 - Public copies (when posted): [{{ page.assets_dir }}/requests/]({{ page.assets_dir }}/requests/)
 
 ### Agency correspondence
 
-Acknowledgements, extensions, delivery issues, portal messages.  
+Acknowledgements, extensions, delivery issues, portal messages.
 
 - Public copies (when posted): [{{ page.assets_dir }}/correspondence/]({{ page.assets_dir }}/correspondence/)
 
 ### Agency responses
 
-Determinations (denial/refusal/partial grant), “no records,” fee estimates, and redaction explanations.  
+Determinations (denial/refusal/partial grant), “no records,” fee estimates, and redaction explanations.
 
 - Public copies (when posted): [{{ page.assets_dir }}/responses/]({{ page.assets_dir }}/responses/)
 
 ### Productions (records received)
 
-Responsive records produced by the agency (PDF/CSV/XLSX/images/zips).  
+Responsive records produced by the agency (PDF/CSV/XLSX/images/zips).
 
 - Public productions (when posted): [{{ page.assets_dir }}/productions/]({{ page.assets_dir }}/productions/)
 

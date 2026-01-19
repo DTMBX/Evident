@@ -6,6 +6,7 @@
 ## No Permission Granted
 
 No rights are granted to use Barber Cam branding in:
+
 - software products
 - websites or apps
 - marketing or fundraising
@@ -15,6 +16,7 @@ No rights are granted to use Barber Cam branding in:
 ## Allowed References
 
 You may:
+
 - reference the project by name in plain text (e.g., “Barber Cam (Preview)”) when linking to the official repository
 - discuss high-level concepts without reproducing protected assets
 

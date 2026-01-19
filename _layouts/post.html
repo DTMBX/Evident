@@ -5,20 +5,14 @@ layout: default
 <article class="essay-record shell">
   <header class="essay-header">
     {% if page.date %}
-    <p class="essay-date">
-      {{ page.date | date: "%B %-d, %Y" }}
-    </p>
+    <p class="essay-date">{{ page.date | date: "%B %-d, %Y" }}</p>
     {% endif %}
-    
+
     <h1 class="essay-title">{{ page.title }}</h1>
-    
+
     {% if page.description %}
-    <p class="essay-subtitle">
-      {{ page.description }}
-    </p>
-    {% endif %}
-    
-    {% if page.categories %}
+    <p class="essay-subtitle">{{ page.description }}</p>
+    {% endif %} {% if page.categories %}
     <div class="post-categories">
       {% for category in page.categories %}
       <span class="category-badge">{{ category }}</span>
@@ -27,9 +21,7 @@ layout: default
     {% endif %}
   </header>
 
-  <section class="essay-body">
-    {{ content }}
-  </section>
+  <section class="essay-body">{{ content }}</section>
 
   {% if page.tags %}
   <footer class="essay-tags">

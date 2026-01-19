@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import styles from './BarbershopHero.module.css';
+import { useEffect, useState, useCallback } from "react";
+import styles from "./BarbershopHero.module.css";
 
 /**
  * BarbershopHero.next.tsx
  * Next.js App Router TypeScript component for animated barber shop hero
- * 
+ *
  * Features:
  * - 'use client' directive for App Router compatibility
  * - Full TypeScript support with strict typing
@@ -15,13 +15,13 @@ import styles from './BarbershopHero.module.css';
  * - Dark mode auto-detection
  * - GPU-accelerated animation (60fps)
  * - Server-safe with typeof window checks
- * 
+ *
  * @example
  * import BarbershopHero from '@/components/BarbershopHero.next';
- * 
+ *
  * export default function Home() {
  *   return (
- *     <BarbershopHero 
+ *     <BarbershopHero
  *       variant="default"
  *       onCtaClick={() => console.log('CTA clicked')}
  *     />
@@ -35,7 +35,7 @@ interface BarbershopHeroProps {
   /** Descriptive text/tagline */
   tagline?: string;
   /** Layout variant: 'default' | 'minimal' | 'full' */
-  variant?: 'default' | 'minimal' | 'full';
+  variant?: "default" | "minimal" | "full";
   /** CTA button text */
   ctaText?: string;
   /** Callback when CTA is clicked */
@@ -53,44 +53,44 @@ interface BarbershopHeroProps {
 }
 
 export default function BarbershopHero({
-  heading = 'Welcome to Barber Cam',
-  tagline = 'Premium barbershop experience',
-  variant = 'default',
-  ctaText = 'Get Started',
+  heading = "Welcome to Barber Cam",
+  tagline = "Premium barbershop experience",
+  variant = "default",
+  ctaText = "Get Started",
   onCtaClick,
-  className = '',
+  className = "",
   svgSize = 200,
   animationDuration = 5.5,
   showBadge = false,
-  badgeText = 'Premium',
+  badgeText = "Premium",
 }: BarbershopHeroProps) {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     // Check motion preference
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(motionQuery.matches);
 
     const handleMotionChange = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches);
     };
 
-    motionQuery.addEventListener('change', handleMotionChange);
+    motionQuery.addEventListener("change", handleMotionChange);
 
     // Check dark mode preference
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDarkMode(darkModeQuery.matches);
 
     const handleDarkModeChange = (e: MediaQueryListEvent) => {
       setIsDarkMode(e.matches);
     };
 
-    darkModeQuery.addEventListener('change', handleDarkModeChange);
+    darkModeQuery.addEventListener("change", handleDarkModeChange);
 
     return () => {
-      motionQuery.removeEventListener('change', handleMotionChange);
-      darkModeQuery.removeEventListener('change', handleDarkModeChange);
+      motionQuery.removeEventListener("change", handleMotionChange);
+      darkModeQuery.removeEventListener("change", handleDarkModeChange);
     };
   }, []);
 
@@ -99,16 +99,16 @@ export default function BarbershopHero({
   }, [onCtaClick]);
 
   const rootClass = [
-    styles['barbershop-hero'],
+    styles["barbershop-hero"],
     styles[`barbershop-hero--${variant}`],
-    prefersReducedMotion && styles['no-animation'],
-    isDarkMode && styles['dark-mode'],
+    prefersReducedMotion && styles["no-animation"],
+    isDarkMode && styles["dark-mode"],
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
-  const svgAnimationClass = prefersReducedMotion ? styles['paused'] : '';
+  const svgAnimationClass = prefersReducedMotion ? styles["paused"] : "";
 
   return (
     <section
@@ -116,9 +116,9 @@ export default function BarbershopHero({
       aria-label="Barbershop hero section with animated barber pole"
       role="banner"
     >
-      <div className={styles['hero-inner']}>
+      <div className={styles["hero-inner"]}>
         {/* Visual: Barber Pole SVG */}
-        <div className={styles['hero-visual']}>
+        <div className={styles["hero-visual"]}>
           <svg
             width={svgSize}
             height={svgSize}
@@ -129,11 +129,17 @@ export default function BarbershopHero({
             style={{
               animation: !prefersReducedMotion
                 ? `spin-pole ${animationDuration}s linear infinite`
-                : 'none',
+                : "none",
             }}
           >
             <defs>
-              <linearGradient id="poleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <linearGradient
+                id="poleGradient"
+                x1="0%"
+                y1="0%"
+                x2="0%"
+                y2="100%"
+              >
                 <stop offset="0%" stopColor="#ffffff" />
                 <stop offset="33%" stopColor="#ff0000" />
                 <stop offset="66%" stopColor="#0047ab" />
@@ -149,7 +155,14 @@ export default function BarbershopHero({
                 patternUnits="userSpaceOnUse"
                 patternTransform="rotate(-45)"
               >
-                <line x1="0" y1="0" x2="0" y2="20" stroke="#d4af37" strokeWidth="3" />
+                <line
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="20"
+                  stroke="#d4af37"
+                  strokeWidth="3"
+                />
               </pattern>
             </defs>
 
@@ -218,26 +231,18 @@ export default function BarbershopHero({
         </div>
 
         {/* Content: Heading, Tagline, CTA */}
-        <div className={styles['hero-content']}>
+        <div className={styles["hero-content"]}>
           {showBadge && badgeText && (
-            <span className={styles['hero-badge']}>{badgeText}</span>
+            <span className={styles["hero-badge"]}>{badgeText}</span>
           )}
 
-          {heading && (
-            <h1 className={styles['hero-title']}>
-              {heading}
-            </h1>
-          )}
+          {heading && <h1 className={styles["hero-title"]}>{heading}</h1>}
 
-          {tagline && (
-            <p className={styles['hero-tagline']}>
-              {tagline}
-            </p>
-          )}
+          {tagline && <p className={styles["hero-tagline"]}>{tagline}</p>}
 
           {ctaText && (
             <button
-              className={styles['hero-cta']}
+              className={styles["hero-cta"]}
               onClick={handleCtaClick}
               aria-label={ctaText}
             >

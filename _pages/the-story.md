@@ -123,16 +123,16 @@ body_class: page-story
 
     <h2 style="margin-top: 3rem;">What This Means for New Jersey</h2>
     <p>
-      Faith Frontier translates this personal journey into practical service. We document cases that 
-      expose procedural gaps. We equip residents with plain-language guidance. We stand beside families 
+      Faith Frontier translates this personal journey into practical service. We document cases that
+      expose procedural gaps. We equip residents with plain-language guidance. We stand beside families
       as they navigate courts, agencies, and systems that often fail to see them as human.
     </p>
     <p>
-      We do this because we know what it feels like to be caught between two worlds, two systems, two 
+      We do this because we know what it feels like to be caught between two worlds, two systems, two
       ways of seeing reality. And we believe that clarity, truth, and faith can bridge those gaps.
     </p>
     <p>
-      This is more than advocacy. It's discipleship. It's stewardship. It's the work of rebuilding trust 
+      This is more than advocacy. It's discipleship. It's stewardship. It's the work of rebuilding trust
       one case, one conversation, one act of mercy at a time.
     </p>
 

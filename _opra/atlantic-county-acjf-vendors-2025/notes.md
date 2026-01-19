@@ -7,6 +7,7 @@ visibility: "Internal working notes; publish only if appropriate"
 ## Scope of notes (non-findings)
 
 This file is used to track:
+
 - what was requested,
 - what was produced,
 - what was withheld/redacted (and the stated reason),
@@ -17,19 +18,23 @@ These notes do not assert factual findings. They are an organizational aid to en
 ## Working checklist
 
 ### After filing
+
 - Save each NJ OPRA Machine confirmation email/receipt as PDF.
 - Store receipts in `/requests/` and log the date in `timeline.yml`.
 
 ### After any extension
+
 - Save extension notice as PDF.
 - Log the extension date and the new promised production date in `timeline.yml`.
 
 ### After any production
+
 - Store produced documents in `/responses/` with clear filenames.
 - If a redaction index is provided, store it alongside the production.
 - Log production date and a short description in `timeline.yml`.
 
 ### If records are denied or heavily redacted
+
 - Confirm whether the denial is:
   - “no records,”
   - “records exempt,”
@@ -50,6 +55,7 @@ These notes do not assert factual findings. They are an organizational aid to en
 ## Publication discipline
 
 If this record is published publicly:
+
 - publish primary documents and the timeline,
 - keep interpretive analysis separate from the index page,
 - avoid conclusions not directly supported by the records.

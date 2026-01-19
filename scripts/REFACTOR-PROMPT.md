@@ -12,6 +12,7 @@
 Execute a **marathon refactor session** to audit and improve the FaithFrontier repository using the newly implemented AI governance architecture located in `/.ai/`.
 
 This is a **multi-stage process** that will systematically review all content, code, documentation, and automation to ensure strict compliance with:
+
 - **SYSTEM.md** - Foundational behavioral rules
 - **STYLE.md** - Writing and tone standards
 - **DOMAIN.md** - FaithFrontier project context
@@ -184,6 +185,7 @@ Execute these stages **sequentially**, documenting progress and issues at each s
    - Link validation
 
 **Output:** Compliance report with:
+
 - Files flagged for review
 - Specific violations or concerns
 - Suggested rewrites or removals
@@ -233,6 +235,7 @@ Execute these stages **sequentially**, documenting progress and issues at each s
 **Tasks:**
 
 1. **Run Full Docket Repair:**
+
    ```bash
    node scripts/repair-docket-system.js
    ```
@@ -243,9 +246,11 @@ Execute these stages **sequentially**, documenting progress and issues at each s
    - Identify orphaned dockets or unmapped cases
 
 3. **PDF Health Check:**
+
    ```bash
    node scripts/check-pdf-health.js
    ```
+
    - Verify all PDFs are valid and not corrupt
    - Check file sizes (min 4KB, flag >5MB)
    - Identify missing PDFs referenced in dockets
@@ -254,6 +259,7 @@ Execute these stages **sequentially**, documenting progress and issues at each s
    ```bash
    node scripts/repair-docket-file-links-to-filings.js
    ```
+
    - Ensure all docket entries link to existing PDFs
    - Fix broken references
    - Report missing files
@@ -269,25 +275,31 @@ Execute these stages **sequentially**, documenting progress and issues at each s
 **Tasks:**
 
 1. **Site Link Check:**
+
    ```bash
    node scripts/check-site-links.js
    ```
+
    - Identify broken internal links
    - Check external links (404s, redirects)
    - Validate anchor links within pages
 
 2. **Navigation Validation:**
+
    ```bash
    node scripts/check-nav-snapshot.js
    ```
+
    - Verify navigation structure consistency
    - Check for orphaned pages
    - Ensure breadcrumb accuracy
 
 3. **Accessibility Audit:**
+
    ```bash
    node scripts/validate-contrast.js
    ```
+
    - Check color contrast ratios (WCAG AA minimum)
    - Verify alt text on images
    - Check semantic HTML structure
@@ -296,6 +308,7 @@ Execute these stages **sequentially**, documenting progress and issues at each s
    ```bash
    node scripts/verify-frontend-js.js
    ```
+
    - Validate JavaScript syntax
    - Check for console errors
    - Verify functionality
@@ -311,9 +324,11 @@ Execute these stages **sequentially**, documenting progress and issues at each s
 **Tasks:**
 
 1. **Workflow Analysis:**
+
    ```bash
    python scripts/analyze-workflows.py
    ```
+
    - Review all `.github/workflows/*.yml` files
    - Check for optional vs. required steps
    - Verify secret handling follows COMPLIANCE.md
@@ -444,18 +459,22 @@ Execute these stages **sequentially**, documenting progress and issues at each s
 **Tasks:**
 
 1. **Jekyll Build Test:**
+
    ```bash
    bundle exec jekyll build
    ```
+
    - Verify no build errors
    - Check for broken Liquid templates
    - Validate generated HTML
    - Test locally: `bundle exec jekyll serve`
 
 2. **Checksum Generation:**
+
    ```bash
    node scripts/generate-checksums.js
    ```
+
    - Generate file integrity checksums
    - Compare with previous checksums
    - Identify unexpected changes
@@ -495,7 +514,6 @@ Per **CODEX.md** safety rules:
   - Violating COMPLIANCE.md boundaries
   - Generating harmful content
   - Exceeding authorized scope
-  
 - **Confirmation Required:**
   - Deleting files
   - Modifying critical configs (`.github/`, `_config.yml`)
@@ -556,7 +574,7 @@ The refactor marathon is complete when:
 ✅ AI-generated content meets quality standards  
 ✅ Documentation is complete and current  
 ✅ Style and tone are consistent across site  
-✅ Jekyll builds and deploys successfully  
+✅ Jekyll builds and deploys successfully
 
 ---
 

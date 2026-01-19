@@ -3,6 +3,7 @@ layout: default
 title: Vision
 permalink: /docs/vision/
 ---
+
 <article class="md">
   <header class="md-header">
     <h1 class="md-title">Barber-Cam Vision</h1>
@@ -95,7 +96,7 @@ Barber Cam operates within established legal frameworks:
 
 ## Our Future Vision
 
-### Phase 1: Foundation & Validation *(In Progress)*
+### Phase 1: Foundation & Validation _(In Progress)_
 
 **Current Focus:**
 
@@ -113,7 +114,7 @@ Barber Cam operates within established legal frameworks:
 - 🔄 Community advisory board forming
 - ⏳ Beta testing framework preparation
 
-### Phase 2: Citizen Empowerment *(Next 12-18 Months)*
+### Phase 2: Citizen Empowerment _(Next 12-18 Months)_
 
 **Vision:**
 We will build tools that empower ordinary citizens to document truth with dignity and restraint—not as law enforcement or vigilantes, but as stewards of accuracy and public trust.
@@ -141,7 +142,7 @@ We will build tools that empower ordinary citizens to document truth with dignit
 - **Transparency tools** — Showing exactly what data is collected and where it goes
 - **User control** — Complete control over recording, storage, and disclosure
 
-### Phase 3: Systemic Accountability *(18-36 Months)*
+### Phase 3: Systemic Accountability _(18-36 Months)_
 
 **Vision:**
 Extend Barber Cam principles to support broader community accountability through transparent, lawful documentation that strengthens due process rather than substituting for it.
@@ -169,7 +170,7 @@ Extend Barber Cam principles to support broader community accountability through
 - **Accountability records** — Making governmental and institutional records accessible
 - **Public learning** — Using documentation to educate citizens about governance
 
-### Phase 4: Scaled Impact *(3-5 Years)*
+### Phase 4: Scaled Impact _(3-5 Years)_
 
 **Vision:**
 Demonstrate that ethical, citizen-led documentation can strengthen constitutional governance, reduce institutional corruption, and increase public trust—without becoming surveillance or vigilantism.
@@ -336,7 +337,8 @@ We will build tools with restraint. We will operate with accountability. We will
 
 ---
 
-*This vision document reflects Barber Cam's commitment to ethical, lawful, and transparent operation. It is a living document, subject to refinement as we learn from experience and community feedback.*
+_This vision document reflects Barber Cam's commitment to ethical, lawful, and transparent operation. It is a living document, subject to refinement as we learn from experience and community feedback._
+
   </section>
 
   <footer class="md-footer">

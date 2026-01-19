@@ -15,7 +15,7 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
   // -------------------------
   // Enable gate (default OFF)
@@ -23,13 +23,14 @@
   function isEnabled() {
     try {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('debug') === 'performance') return true;
-    } catch (_) { }
+      if (params.get("debug") === "performance") return true;
+    } catch (_) {}
 
-    if (window.location.hostname === 'localhost') return true;
+    if (window.location.hostname === "localhost") return true;
 
     const html = document.documentElement;
-    if (html && html.getAttribute('data-performance-monitor') === 'true') return true;
+    if (html && html.getAttribute("data-performance-monitor") === "true")
+      return true;
 
     return false;
   }
@@ -41,7 +42,7 @@
     lcp: null, // Largest Contentful Paint
     fid: null, // First Input Delay
     cls: null, // Cumulative Layout Shift
-    ttfb: null // Time to First Byte
+    ttfb: null, // Time to First Byte
   };
 
   function reportMetric(metric, value, rating) {
@@ -56,21 +57,22 @@
       lcp: { good: 2500, poor: 4000 },
       fid: { good: 100, poor: 300 },
       cls: { good: 0.1, poor: 0.25 },
-      ttfb: { good: 800, poor: 1800 }
+      ttfb: { good: 800, poor: 1800 },
     };
 
     const threshold = thresholds[metric];
-    if (!threshold) return 'unknown';
+    if (!threshold) return "unknown";
 
-    if (value <= threshold.good) return 'good';
-    if (value <= threshold.poor) return 'needs-improvement';
-    return 'poor';
+    if (value <= threshold.good) return "good";
+    if (value <= threshold.poor) return "needs-improvement";
+    return "poor";
   }
 
   function measureTTFB() {
     if (!window.performance || !performance.timing) return;
-    const ttfb = performance.timing.responseStart - performance.timing.requestStart;
-    reportMetric('ttfb', ttfb, getRating('ttfb', ttfb));
+    const ttfb =
+      performance.timing.responseStart - performance.timing.requestStart;
+    reportMetric("ttfb", ttfb, getRating("ttfb", ttfb));
   }
 
   function measureFCP() {
@@ -78,15 +80,15 @@
     try {
       const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          if (entry.name === 'first-contentful-paint') {
+          if (entry.name === "first-contentful-paint") {
             const value = Math.round(entry.startTime);
-            reportMetric('fcp', value, getRating('fcp', value));
+            reportMetric("fcp", value, getRating("fcp", value));
             observer.disconnect();
           }
         }
       });
-      observer.observe({ entryTypes: ['paint'] });
-    } catch (_) { }
+      observer.observe({ entryTypes: ["paint"] });
+    } catch (_) {}
   }
 
   function measureLCP() {
@@ -97,18 +99,23 @@
       observer = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1];
-        const value = Math.round(lastEntry.renderTime || lastEntry.loadTime || lastEntry.startTime || 0);
-        reportMetric('lcp', value, getRating('lcp', value));
+        const value = Math.round(
+          lastEntry.renderTime ||
+            lastEntry.loadTime ||
+            lastEntry.startTime ||
+            0,
+        );
+        reportMetric("lcp", value, getRating("lcp", value));
       });
 
-      observer.observe({ entryTypes: ['largest-contentful-paint'] });
+      observer.observe({ entryTypes: ["largest-contentful-paint"] });
     } catch (_) {
       return;
     }
 
     // Stop observing when page is hidden to avoid lingering observer
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden' && observer) {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden" && observer) {
         observer.disconnect();
         observer = null;
       }
@@ -121,12 +128,12 @@
       const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           const value = Math.round(entry.processingStart - entry.startTime);
-          reportMetric('fid', value, getRating('fid', value));
+          reportMetric("fid", value, getRating("fid", value));
           observer.disconnect();
         }
       });
-      observer.observe({ entryTypes: ['first-input'] });
-    } catch (_) { }
+      observer.observe({ entryTypes: ["first-input"] });
+    } catch (_) {}
   }
 
   function measureCLS() {
@@ -142,14 +149,18 @@
         }
       });
 
-      observer.observe({ entryTypes: ['layout-shift'] });
+      observer.observe({ entryTypes: ["layout-shift"] });
     } catch (_) {
       return;
     }
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        reportMetric('cls', Number(clsValue.toFixed(3)), getRating('cls', clsValue));
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        reportMetric(
+          "cls",
+          Number(clsValue.toFixed(3)),
+          getRating("cls", clsValue),
+        );
         if (observer) observer.disconnect();
         observer = null;
       }
@@ -157,13 +168,14 @@
   }
 
   function measurePageLoad() {
-    window.addEventListener('load', () => {
+    window.addEventListener("load", () => {
       if (!window.performance || !performance.timing) return;
-      const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+      const loadTime =
+        performance.timing.loadEventEnd - performance.timing.navigationStart;
       console.log(`Page Load Time: ${loadTime}ms`);
 
       setTimeout(() => {
-        console.group('Performance Summary');
+        console.group("Performance Summary");
         console.table(metrics);
         console.groupEnd();
       }, 1500);
@@ -173,23 +185,27 @@
   function logResourceTiming() {
     // Only do this when explicitly requested (debug flag)
     const params = new URLSearchParams(window.location.search);
-    const logResources = params.get('debug') === 'performance';
+    const logResources = params.get("debug") === "performance";
 
     if (!logResources) return;
     if (!window.performance || !performance.getEntriesByType) return;
 
-    const resources = performance.getEntriesByType('resource');
+    const resources = performance.getEntriesByType("resource");
     const slow = resources.filter((r) => r.duration > 500);
 
     if (slow.length) {
-      console.group('Slow Resources (>500ms)');
-      slow.forEach((r) => console.log(`${r.name}: ${Math.round(r.duration)}ms`));
+      console.group("Slow Resources (>500ms)");
+      slow.forEach((r) =>
+        console.log(`${r.name}: ${Math.round(r.duration)}ms`),
+      );
       console.groupEnd();
     }
   }
 
   function init() {
-    console.log('Performance Monitoring Enabled (debug/localhost/data attribute).');
+    console.log(
+      "Performance Monitoring Enabled (debug/localhost/data attribute).",
+    );
     measureTTFB();
     measureFCP();
     measureLCP();
@@ -197,7 +213,7 @@
     measureCLS();
     measurePageLoad();
 
-    window.addEventListener('load', () => setTimeout(logResourceTiming, 1000));
+    window.addEventListener("load", () => setTimeout(logResourceTiming, 1000));
   }
 
   init();
@@ -205,6 +221,6 @@
   // Export (debug convenience)
   window.performanceMetrics = {
     get: () => metrics,
-    report: () => console.table(metrics)
+    report: () => console.table(metrics),
   };
 })();

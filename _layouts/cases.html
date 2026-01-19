@@ -1,12 +1,13 @@
 ---
 layout: default
 ---
+
 <h1>Case Index</h1>
 <ul class="cases-list">
   {% for case in site.cases %}
-    <li>
-      <a href="{{ case.url }}">{{ case.title }}</a>
-      {% if case.docket %} (Docket: {{ case.docket }}){% endif %}
-    </li>
+  <li>
+    <a href="{{ case.url }}">{{ case.title }}</a>
+    {% if case.docket %} (Docket: {{ case.docket }}){% endif %}
+  </li>
   {% endfor %}
 </ul>

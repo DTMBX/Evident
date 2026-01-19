@@ -31,6 +31,7 @@ This page is a documentation index. It does not assert findings, legal conclusio
 ## OPRAmachine Public Record
 
 This request is publicly tracked on OPRAmachine:
+
 - **View this request:** [NJDOT OPRA Requests]({{ page.opramachine_url }})
 - **Filed by:** {{ page.filed_by }}
 - **View all requests:** [X (Devon Tyler of the Barber-Materio Family)]({{ page.opramachine_user }})
@@ -41,8 +42,6 @@ This request is publicly tracked on OPRAmachine:
 - Response: **pending**
 
 ## Timeline
-
-
 
 ## Documents
 
@@ -65,7 +64,6 @@ This request is publicly tracked on OPRAmachine:
 
 - Responsive records produced by the agency (PDF/CSV/XLSX/images/zips).
 - See: `productions/`
-
 
 ## Notes and analysis boundary
 

@@ -1,4 +1,5 @@
 ---
+
 layout: default
 title: "Interactive US Medication & Gardening Guide"
 description: "Discover which medications are overprescribed in your state, their natural origins, and what you can garden as alternatives. Interactive map for all 50 states with verified CDC data."
@@ -9,15 +10,18 @@ show_breadcrumbs: true
 hide_hero: true
 
 page_includes:
-  - holistic-data.html
+
+- holistic-data.html
 
 page_css:
-  - /assets/css/pages/holistic-map.css
-  - /assets/css/pages/holistic-map-enhanced.css
+
+- /assets/css/pages/holistic-map.css
+- /assets/css/pages/holistic-map-enhanced.css
 
 page_js:
-  - /assets/js/holistic-interactive-map.js
-  - /assets/js/symptom-plant-tool.js
+
+- /assets/js/holistic-interactive-map.js
+- /assets/js/symptom-plant-tool.js
 
 <section class="section-block">
   <div class="container">
@@ -35,6 +39,7 @@ page_js:
         It does not reject legitimate medical care.
       </p>
     </blockquote>
+
   </div>
 </section>
 
@@ -219,5 +224,6 @@ page_js:
     </p>
 
     <p class="muted">Living document. Contributions welcome, with safety and sourcing standards.</p>
+
   </div>
 </section>

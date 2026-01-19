@@ -70,14 +70,14 @@
       container.style.opacity = "0";
       var ref = (v && v.reference) || "";
       var text = (v && v.text) || "";
-      
+
       // Decode HTML entities from Bible Gateway API
       if (text) {
         var temp = document.createElement("textarea");
         temp.innerHTML = text;
         text = temp.value;
       }
-      
+
       if (textEl) textEl.textContent = text || "Daily verse unavailable.";
       if (refEl) {
         var q = encodeURIComponent(ref);

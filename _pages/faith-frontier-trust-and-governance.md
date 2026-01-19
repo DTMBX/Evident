@@ -24,7 +24,7 @@ Faith Frontier Ecclesiastical Trust is a religious-purpose trust with an issued 
 
 ## Compliance and transparency
 
-The Trust operates within New Jersey and federal law, even as it remains ecclesiastical in nature. Intellectual property and assets are held for public benefit, and partnerships will be documented through transparent agreements. 
+The Trust operates within New Jersey and federal law, even as it remains ecclesiastical in nature. Intellectual property and assets are held for public benefit, and partnerships will be documented through transparent agreements.
 
 - No legal services are offered; counsel is engaged through separate, written agreements when required.
 - All filings, licenses, and corporate records are maintained for inspection so third parties can verify status rather than rely on private assertions.

@@ -4,6 +4,7 @@ layout: default
 summary: "The scriptural foundations guiding Faith Frontier’s mission of sanctuary, work, stewardship, and lawful restoration through Tillerstead Sanctuary."
 permalink: /theology-of-faith-frontier/
 ---
+
 ```
 
 Faith Frontier Ecclesiastical Trust is a religious-purpose trust committed to sanctuary, agrarian stewardship, charitable service, and justice-oriented work for the people of New Jersey. Its mission is rooted in the teachings of Jesus Christ, particularly the command to serve the hungry, the stranger, the sick, and the imprisoned (Matthew 25:35–40).
@@ -89,3 +90,4 @@ If clarification, documentation, or correction is needed in the public record, i
 
 * Read the **[Tillerstead Sanctuary Masterplan]({{ '/atlantic-club-tillerstead-masterplan/' | relative_url }})** for the Atlantic Club redevelopment vision.
 * Review the **[Recovery-to-Work Sanctuary Model]({{ '/recovery-to-work-sanctuary-model/' | relative_url }})** to see how outreach, care, training, and employment are integrated lawfully and responsibly.
+```

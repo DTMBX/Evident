@@ -5,7 +5,6 @@
   documents:
     - path: "requests/"
       note: "Saved copy of the OPRA request and any transmission proof"
-
 # Add future entries only when they occur:
 # - Extension requested
 # - Partial production

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import styles from './BarbershopBadgeHero.module.css';
+import React, { useEffect, useState } from "react";
+import styles from "./BarbershopBadgeHero.module.css";
 
 /**
  * BarbershopBadgeHero - React Component
- * 
+ *
  * A mobile-first animated barbershop badge hero component with:
  * - Responsive design (360px+)
  * - Subtle spinning barber pole animation
  * - Dark mode support via CSS variables
  * - Accessibility features (ARIA, semantic HTML, prefers-reduced-motion)
  * - Touch-friendly interactions
- * 
+ *
  * @param {Object} props - Component props
  * @param {string} props.heading - Main heading (default: "Citizen Accountability")
  * @param {string} props.description - Description text (default: provided)
@@ -18,20 +18,20 @@ import styles from './BarbershopBadgeHero.module.css';
  * @param {string} props.tagline - Badge tagline (default: "A CUT ABOVE")
  * @param {Function} props.onCtaClick - CTA button click handler
  * @param {string} props.className - Additional CSS classes
- * 
+ *
  * @example
- * <BarbershopBadgeHero 
+ * <BarbershopBadgeHero
  *   heading="Welcome to Barber Cam"
  *   onCtaClick={() => alert('CTA clicked!')}
  * />
  */
 export const BarbershopBadgeHero = ({
-  heading = 'Citizen Accountability',
-  description = 'Precision. Patience. Virtue. Honor. A citizen-led accountability platform built on transparency and due process.',
-  year = '2024',
-  tagline = 'A CUT ABOVE',
+  heading = "Citizen Accountability",
+  description = "Precision. Patience. Virtue. Honor. A citizen-led accountability platform built on transparency and due process.",
+  year = "2024",
+  tagline = "A CUT ABOVE",
   onCtaClick,
-  className = '',
+  className = "",
 }) => {
   // State to track motion preference
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -39,7 +39,7 @@ export const BarbershopBadgeHero = ({
   // Detect motion preference on mount and listen for changes
   useEffect(() => {
     // Check initial preference
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
     // Listen for changes
@@ -47,10 +47,10 @@ export const BarbershopBadgeHero = ({
       setPrefersReducedMotion(e.matches);
     };
 
-    mediaQuery.addEventListener('change', handleChange);
+    mediaQuery.addEventListener("change", handleChange);
 
     return () => {
-      mediaQuery.removeEventListener('change', handleChange);
+      mediaQuery.removeEventListener("change", handleChange);
     };
   }, []);
 
@@ -59,7 +59,7 @@ export const BarbershopBadgeHero = ({
       onCtaClick();
     } else {
       // Default behavior: log to console
-      console.log('CTA clicked');
+      console.log("CTA clicked");
     }
   };
 
@@ -69,7 +69,6 @@ export const BarbershopBadgeHero = ({
       aria-labelledby="hero-heading"
     >
       <div className={styles.badgeContainer}>
-        
         {/* Barbershop Badge with Spinning Pole */}
         <div
           className={styles.barbershopBadge}
@@ -81,7 +80,7 @@ export const BarbershopBadgeHero = ({
 
           {/* SVG Barber Pole (spinning element) */}
           <svg
-            className={`${styles.barberPole} ${prefersReducedMotion ? styles.noAnimation : ''}`}
+            className={`${styles.barberPole} ${prefersReducedMotion ? styles.noAnimation : ""}`}
             viewBox="0 0 60 140"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
@@ -188,7 +187,6 @@ export const BarbershopBadgeHero = ({
             Explore Now
           </button>
         </div>
-
       </div>
     </section>
   );

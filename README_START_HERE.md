@@ -21,27 +21,32 @@ Welcome! This is your complete guide to all animated hero components for the Bar
 **Status:** ✅ Production-ready component waiting for you
 
 **What you get:**
+
 - `components/BarbershopHero.jsx` — React component with hooks
 - `components/BarbershopHero.css` — Shared stylesheet
 - Full customization via props (heading, tagline, animation speed, etc.)
 - 3 layout variants (default, minimal, full)
 
 **Installation (2 minutes):**
+
 ```bash
 cp components/BarbershopHero.jsx src/components/
 cp components/BarbershopHero.css src/components/
 ```
 
 **Usage:**
+
 ```jsx
-import BarbershopHero from '@/components/BarbershopHero';
+import BarbershopHero from "@/components/BarbershopHero";
 
 export default function Home() {
-  return <BarbershopHero 
-    heading="Welcome to Barber Cam"
-    ctaText="Book Now"
-    onCtaClick={() => handleNavigation()}
-  />;
+  return (
+    <BarbershopHero
+      heading="Welcome to Barber Cam"
+      ctaText="Book Now"
+      onCtaClick={() => handleNavigation()}
+    />
+  );
 }
 ```
 
@@ -54,6 +59,7 @@ export default function Home() {
 **Status:** ✅ Production-ready TypeScript component waiting for you
 
 **What you get:**
+
 - `components/BarbershopHero.next.tsx` — Next.js App Router component
 - Full TypeScript support with strict types
 - `components/BarbershopHero.css` — Shared stylesheet
@@ -61,21 +67,25 @@ export default function Home() {
 - All React features + Next.js optimizations
 
 **Installation (2 minutes):**
+
 ```bash
 cp components/BarbershopHero.next.tsx src/components/BarbershopHero.tsx
 cp components/BarbershopHero.css src/components/
 ```
 
 **Usage:**
+
 ```tsx
-import BarbershopHero from '@/components/BarbershopHero';
+import BarbershopHero from "@/components/BarbershopHero";
 
 export default function Home() {
-  return <BarbershopHero 
-    heading="Welcome to Barber Cam"
-    ctaText="Book Now"
-    onCtaClick={() => router.push('/booking')}
-  />;
+  return (
+    <BarbershopHero
+      heading="Welcome to Barber Cam"
+      ctaText="Book Now"
+      onCtaClick={() => router.push("/booking")}
+    />
+  );
 }
 ```
 
@@ -88,6 +98,7 @@ export default function Home() {
 **Status:** ✅ Two implementations ready
 
 **What you get:**
+
 - `barbershop-badge-hero.html` — Standalone HTML (all-in-one file)
 - `components/BarbershopBadgeHero.jsx` — React component
 - Optimized for mobile (360px base)
@@ -99,20 +110,21 @@ export default function Home() {
 
 ## 📚 Documentation Navigation
 
-| Document | Read This If... | Time |
-|----------|-----------------|------|
-| **HERO_COMPONENT_INDEX.md** | You want an overview of all options | 5 min |
-| **REACT_NEXTJS_GUIDE.md** | You're using React or Next.js | 10 min |
-| **PERFORMANCE_GUIDE.md** | You want to understand optimization details | 10 min |
-| **DELIVERY_SUMMARY_v2.md** | You need a complete project summary | 10 min |
-| **BARBERSHOP_BADGE_GUIDE.md** | You're building the badge component | 10 min |
-| **BARBERSHOP_BADGE_QUICKSTART.md** | You want the fastest badge setup | 4 min |
+| Document                           | Read This If...                             | Time   |
+| ---------------------------------- | ------------------------------------------- | ------ |
+| **HERO_COMPONENT_INDEX.md**        | You want an overview of all options         | 5 min  |
+| **REACT_NEXTJS_GUIDE.md**          | You're using React or Next.js               | 10 min |
+| **PERFORMANCE_GUIDE.md**           | You want to understand optimization details | 10 min |
+| **DELIVERY_SUMMARY_v2.md**         | You need a complete project summary         | 10 min |
+| **BARBERSHOP_BADGE_GUIDE.md**      | You're building the badge component         | 10 min |
+| **BARBERSHOP_BADGE_QUICKSTART.md** | You want the fastest badge setup            | 4 min  |
 
 ---
 
 ## 🎨 Features at a Glance
 
 ### Animation Performance
+
 - ✅ **60fps** locked frame rate
 - ✅ **<2% CPU** usage
 - ✅ **GPU-accelerated** (transform-only)
@@ -120,6 +132,7 @@ export default function Home() {
 - ✅ Respects `prefers-reduced-motion`
 
 ### Accessibility
+
 - ✅ **WCAG AA** contrast ratios
 - ✅ **Semantic HTML** structure
 - ✅ **ARIA labels** for screen readers
@@ -127,6 +140,7 @@ export default function Home() {
 - ✅ **Motion detection** for safety
 
 ### Responsive Design
+
 - ✅ Mobile-first approach
 - ✅ Works at **360px** width
 - ✅ Breakpoints at 480px, 640px, 1024px
@@ -134,6 +148,7 @@ export default function Home() {
 - ✅ Tested on all devices
 
 ### Browser Support
+
 - ✅ Chrome, Firefox, Safari, Edge
 - ✅ Mobile Safari (iOS)
 - ✅ Chrome Mobile (Android)
@@ -171,11 +186,13 @@ barber-cam-preview-main/
 ### "I want to change the animation speed"
 
 **React/Next.js:**
+
 ```jsx
 <BarbershopHero animationDuration={6} /> {/* 6 seconds instead of 5.5 */}
 ```
 
 **HTML/CSS:**
+
 ```css
 /* In assets/css/style.css, find the animation declaration */
 animation: spin-pole 6s linear infinite; /* Change 5.5s to 6s */
@@ -186,6 +203,7 @@ animation: spin-pole 6s linear infinite; /* Change 5.5s to 6s */
 ### "I want to change the color scheme"
 
 **All versions:**
+
 ```css
 :root {
   --hero-accent: #ff6b35; /* Change from gold (#d4af37) to orange */
@@ -199,6 +217,7 @@ See `REACT_NEXTJS_GUIDE.md` for more color variables.
 ### "Dark mode isn't working"
 
 Both implementations auto-detect dark mode. To test:
+
 - **Windows/Mac:** Settings → Display → Dark mode
 - **Chrome:** DevTools → Command Palette → "CSS media feature prefers-color-scheme"
 
@@ -209,11 +228,12 @@ Everything should automatically switch colors.
 ### "The CTA button should do something"
 
 **React/Next.js:**
+
 ```jsx
-<BarbershopHero 
+<BarbershopHero
   onCtaClick={() => {
     // Your handler here
-    router.push('/booking');
+    router.push("/booking");
     // or: window.location.href = '/booking';
     // or: handleBookingModal();
   }}
@@ -241,6 +261,7 @@ Before going live, verify:
 
 **Q: Which version should I use?**  
 A: Choose based on your tech stack:
+
 - Pure HTML/CSS → v2.0 HTML (already deployed)
 - React app → React component
 - Next.js app → Next.js component
@@ -273,15 +294,15 @@ A: Yes! Edit the SVG element in the component or HTML file.
 
 ## 📊 Project Summary
 
-| Aspect | Status | Details |
-|--------|--------|---------|
+| Aspect                   | Status      | Details                                                |
+| ------------------------ | ----------- | ------------------------------------------------------ |
 | **Animation Refinement** | ✅ Complete | 5.5s duration, improved shadows, optimized performance |
-| **React Component** | ✅ Complete | Hooks, 3 variants, full customization |
-| **Next.js Component** | ✅ Complete | TypeScript, App Router, SSR-safe |
-| **Badge Component** | ✅ Complete | Mobile-first, responsive, dark mode |
-| **Documentation** | ✅ Complete | 98KB of comprehensive guides |
-| **Accessibility** | ✅ Complete | WCAG AA, motion detection, ARIA labels |
-| **Performance** | ✅ Complete | 60fps, <2% CPU, GPU-accelerated |
+| **React Component**      | ✅ Complete | Hooks, 3 variants, full customization                  |
+| **Next.js Component**    | ✅ Complete | TypeScript, App Router, SSR-safe                       |
+| **Badge Component**      | ✅ Complete | Mobile-first, responsive, dark mode                    |
+| **Documentation**        | ✅ Complete | 98KB of comprehensive guides                           |
+| **Accessibility**        | ✅ Complete | WCAG AA, motion detection, ARIA labels                 |
+| **Performance**          | ✅ Complete | 60fps, <2% CPU, GPU-accelerated                        |
 
 **All work is production-ready and can be deployed immediately.**
 

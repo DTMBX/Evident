@@ -23,6 +23,7 @@ show_breadcrumbs: true
       <a class="btn btn-ghost btn--sm" href="#opra">OPRA / public records</a>
       <a class="btn btn-ghost btn--sm" href="#counsel-screening">Counsel screening summary</a>
     </div>
+
   </div>
 </section>
 
@@ -59,6 +60,7 @@ show_breadcrumbs: true
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -107,21 +109,22 @@ show_breadcrumbs: true
         {% endfor %}
       </div>
     {% endif %}
+
   </div>
 </section>
 
 {%- comment -%}
-  OPRA DATA SOURCES (your repo):
+OPRA DATA SOURCES (your repo):
 
-- _data/opra.yml               (records)
-- _data/opra_case_map.yml      (maps OPRA records to cases)
+- \_data/opra.yml (records)
+- \_data/opra_case_map.yml (maps OPRA records to cases)
 
   Assumptions (safe defaults):
 
 - Each OPRA record has a stable key: `id` (preferred) or `slug`.
 - Case pages have `slug` in front matter.
 - opra_case_map.yml maps case_slug -> list of opra ids (or slugs).
-{%- endcomment -%}
+  {%- endcomment -%}
 
 <section id="opra" class="section-block cases-active-opra">
   <div class="container">
@@ -318,6 +321,7 @@ show_breadcrumbs: true
         </p>
       {% endif %}
     </div>
+
   </div>
 </section>
 
@@ -410,5 +414,6 @@ show_breadcrumbs: true
         <a class="btn btn-ghost" href="{{ '/contact/' | relative_url }}">Contact / record access →</a>
       </div>
     </div>
+
   </div>
 </section>

@@ -2,7 +2,7 @@
 
 **Record clean. Store safe. Share fair.**
 
-This is the *public preview* repository for Barber Cam. It exists to communicate direction,
+This is the _public preview_ repository for Barber Cam. It exists to communicate direction,
 safeguards, and design intent — not to grant reuse rights.
 
 ## License / Permissions (Read This First)
@@ -20,6 +20,7 @@ Licensing / collaboration: **BarberCamX@ProtonMail.com**
 ## What Barber Cam Is
 
 Barber Cam is a resident-first capture + evidence management concept focused on:
+
 - lawful documentation
 - privacy-by-default storage
 - controlled sharing (attorney/court-ready exports)

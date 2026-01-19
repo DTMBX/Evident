@@ -57,20 +57,18 @@ This page is a documentation index. It does not assert findings, legal conclusio
 {% if page.opramachine_request_url and page.opramachine_request_url != "" %}
 
 - **View this request:** [Open on OPRAMachine ↗]({{ page.opramachine_request_url }})
-{% elsif page.opramachine_body_url and page.opramachine_body_url != "" %}
+  {% elsif page.opramachine_body_url and page.opramachine_body_url != "" %}
 - **View this agency on OPRAMachine:** [Open agency page ↗]({{ page.opramachine_body_url }})
-{% endif %}
+  {% endif %}
 - **View all requests by filer:** [{{ page.filed_by }} ↗]({{ page.opramachine_user }})
 
 ## Current status
 
 - **Status:** {{ page.status }}
 - **Opened:** {{ page.opened }}
-{% if page.last_updated %}- **Last updated:** {{ page.last_updated }}{% endif %}
+  {% if page.last_updated %}- **Last updated:** {{ page.last_updated }}{% endif %}
 
 ## Timeline
-
-
 
 ## Documents
 
@@ -93,7 +91,6 @@ This page is a documentation index. It does not assert findings, legal conclusio
 
 - Responsive records produced by the agency (PDF/CSV/XLSX/images/zips).
 - See: `productions/`
-
 
 ## Notes and analysis boundary
 

@@ -11,7 +11,8 @@ stylesheet: /assets/css/stewardship-resources.css
 
 <article class="stewardship-resources">
 
-  {%- comment -%} HERO SECTION {%- endcomment -%}
+{%- comment -%} HERO SECTION {%- endcomment -%}
+
   <header class="resources-hero">
     <h1>{{ content.hero.title }}</h1>
     <p class="hero-tagline">{{ content.hero.tagline }}</p>
@@ -27,7 +28,7 @@ stylesheet: /assets/css/stewardship-resources.css
     <div class="disclaimer-box" role="note">
       <h4>{{ content.disclaimer.title }}</h4>
       <p>{{ content.disclaimer.intro }}</p>
-      
+
       <ul class="disclaimer-list">
         {% for point in content.disclaimer.points %}
         <li>
@@ -35,13 +36,14 @@ stylesheet: /assets/css/stewardship-resources.css
         </li>
         {% endfor %}
       </ul>
-      
+
       <p>{{ content.disclaimer.closing }}</p>
     </div>
 
   </section>
 
-  {%- comment -%} PRODUCT FILTERS & GRID {%- endcomment -%}
+{%- comment -%} PRODUCT FILTERS & GRID {%- endcomment -%}
+
   <section class="resources-products container">
     
     <div class="filter-controls">
@@ -62,7 +64,8 @@ stylesheet: /assets/css/stewardship-resources.css
 
   </section>
 
-  {%- comment -%} MISSION SUPPORT {%- endcomment -%}
+{%- comment -%} MISSION SUPPORT {%- endcomment -%}
+
   <section class="mission-support container">
     <h3>{{ content.mission_support.title }}</h3>
     <p>{{ content.mission_support.intro }}</p>
@@ -74,7 +77,8 @@ stylesheet: /assets/css/stewardship-resources.css
     <p>{{ content.mission_support.statement }}</p>
   </section>
 
-  {%- comment -%} QUESTIONS SECTION {%- endcomment -%}
+{%- comment -%} QUESTIONS SECTION {%- endcomment -%}
+
   <section class="resources-questions container">
     <h3>{{ content.questions.title }}</h3>
     <ul>
@@ -86,7 +90,8 @@ stylesheet: /assets/css/stewardship-resources.css
     </ul>
   </section>
 
-  {%- comment -%} FOOTER DISCLOSURES {%- endcomment -%}
+{%- comment -%} FOOTER DISCLOSURES {%- endcomment -%}
+
   <footer class="resources-footer container">
     <hr class="footer-divider" />
     
@@ -98,6 +103,7 @@ stylesheet: /assets/css/stewardship-resources.css
 </article>
 
 {%- comment -%} Embed product data for JavaScript {%- endcomment -%}
+
 <script>
 window.stewardshipProducts = {{ site.data.stewardship-resources | jsonify }};
 </script>

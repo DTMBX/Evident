@@ -3,17 +3,18 @@
 // Validates YAML front matter in case/docket files
 // Generates a report for quick fixes
 
-import fs from 'fs';
-import path from 'path';
-import yaml from 'js-yaml';
+import fs from "fs";
+import path from "path";
+import yaml from "js-yaml";
 
-const CASES_INDEX = '_cases_index';
-const DOCKET_INDEX = '_data/docket_index';
-const CASES_DIR = 'cases';
-const REPORT_DIR = 'reports';
+const CASES_INDEX = "_cases_index";
+const DOCKET_INDEX = "_data/docket_index";
+const CASES_DIR = "cases";
+const REPORT_DIR = "reports";
 const PDF_MIN_BYTES = 100; // Consider <100 bytes as placeholder/empty
 
-const ensureDir = p => fs.existsSync(p) || fs.mkdirSync(p, { recursive: true });
+const ensureDir = (p) =>
+  fs.existsSync(p) || fs.mkdirSync(p, { recursive: true });
 
 function findAllPdfs() {
   const pdfs = [];
@@ -23,7 +24,8 @@ function findAllPdfs() {
       const full = path.join(dir, entry);
       const stat = fs.statSync(full);
       if (stat.isDirectory()) walk(full);
-      else if (entry.toLowerCase().endsWith('.pdf')) pdfs.push({ path: full, size: stat.size });
+      else if (entry.toLowerCase().endsWith(".pdf"))
+        pdfs.push({ path: full, size: stat.size });
     }
   }
   walk(CASES_DIR);
@@ -42,19 +44,20 @@ function findDuplicates(files) {
 }
 
 function findZeroByte(files) {
-  return files.filter(f => f.size < PDF_MIN_BYTES);
+  return files.filter((f) => f.size < PDF_MIN_BYTES);
 }
 
 function validateYamlFrontMatter(filePath) {
   try {
-    const content = fs.readFileSync(filePath, 'utf8');
+    const content = fs.readFileSync(filePath, "utf8");
     const match = content.match(/^---\n([\s\S]*?)\n---/);
-    if (!match) return { valid: false, error: 'Missing YAML front matter' };
+    if (!match) return { valid: false, error: "Missing YAML front matter" };
     const data = yaml.load(match[1]);
     // Check required fields
-    const required = ['title', 'status', 'primary_docket'];
+    const required = ["title", "status", "primary_docket"];
     for (const key of required) {
-      if (!data[key]) return { valid: false, error: `Missing required field: ${key}` };
+      if (!data[key])
+        return { valid: false, error: `Missing required field: ${key}` };
     }
     return { valid: true };
   } catch (e) {
@@ -65,7 +68,7 @@ function validateYamlFrontMatter(filePath) {
 function scanCaseFiles() {
   const results = [];
   for (const entry of fs.readdirSync(CASES_INDEX)) {
-    if (!entry.endsWith('.md')) continue;
+    if (!entry.endsWith(".md")) continue;
     const filePath = path.join(CASES_INDEX, entry);
     const res = validateYamlFrontMatter(filePath);
     results.push({ file: filePath, ...res });
@@ -76,10 +79,10 @@ function scanCaseFiles() {
 function scanDocketFiles() {
   const results = [];
   for (const entry of fs.readdirSync(DOCKET_INDEX)) {
-    if (!entry.endsWith('.yml')) continue;
+    if (!entry.endsWith(".yml")) continue;
     const filePath = path.join(DOCKET_INDEX, entry);
     try {
-      yaml.load(fs.readFileSync(filePath, 'utf8'));
+      yaml.load(fs.readFileSync(filePath, "utf8"));
       results.push({ file: filePath, valid: true });
     } catch (e) {
       results.push({ file: filePath, valid: false, error: e.message });
@@ -102,10 +105,13 @@ function main() {
     duplicates,
     zeroByte,
     caseYaml,
-    docketYaml
+    docketYaml,
   };
-  fs.writeFileSync(path.join(REPORT_DIR, 'file-validation-report.json'), JSON.stringify(report, null, 2));
-  console.log('Validation complete. See reports/file-validation-report.json');
+  fs.writeFileSync(
+    path.join(REPORT_DIR, "file-validation-report.json"),
+    JSON.stringify(report, null, 2),
+  );
+  console.log("Validation complete. See reports/file-validation-report.json");
 }
 
 main();

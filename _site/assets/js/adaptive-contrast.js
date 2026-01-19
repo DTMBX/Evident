@@ -4,20 +4,20 @@
  * Runs on page load and can be triggered manually
  */
 
-import { ContrastUtils } from './contrast-utils.js';
+import { ContrastUtils } from "./contrast-utils.js";
 
 class AdaptiveContrast {
   constructor() {
     this.initialized = false;
     this.brandTokens = {
-      emerald500: 'rgba(1, 138, 106, 1)',
-      emerald400: 'rgba(36, 181, 138, 1)',
-      emerald600: 'rgba(16, 92, 74, 1)',
-      brass500: 'rgba(212, 165, 116, 1)',
-      brass400: 'rgba(160, 122, 50, 1)',
-      cream50: 'rgba(249, 250, 251, 1)',
-      ink900: 'rgba(28, 27, 25, 1)',
-      navy950: 'rgba(5, 13, 28, 1)'
+      emerald500: "rgba(1, 138, 106, 1)",
+      emerald400: "rgba(36, 181, 138, 1)",
+      emerald600: "rgba(16, 92, 74, 1)",
+      brass500: "rgba(212, 165, 116, 1)",
+      brass400: "rgba(160, 122, 50, 1)",
+      cream50: "rgba(249, 250, 251, 1)",
+      ink900: "rgba(28, 27, 25, 1)",
+      navy950: "rgba(5, 13, 28, 1)",
     };
   }
 
@@ -37,7 +37,10 @@ class AdaptiveContrast {
     this.setupDebugCommands();
 
     this.initialized = true;
-    console.log('%c✓ Adaptive Contrast System Initialized', 'color: #10b981; font-weight: bold;');
+    console.log(
+      "%c✓ Adaptive Contrast System Initialized",
+      "color: #10b981; font-weight: bold;",
+    );
   }
 
   /**
@@ -46,18 +49,18 @@ class AdaptiveContrast {
   applyAdaptiveColors() {
     // Find all elements with specific background colors
     const selectors = [
-      '.hero',
-      '.section',
-      '.card',
-      '.panel',
-      '.hero-side-panel',
+      ".hero",
+      ".section",
+      ".card",
+      ".panel",
+      ".hero-side-panel",
       '[style*="background"]',
-      '[class*="bg-"]'
+      '[class*="bg-"]',
     ];
 
-    selectors.forEach(selector => {
+    selectors.forEach((selector) => {
       const elements = document.querySelectorAll(selector);
-      elements.forEach(element => this.processElement(element));
+      elements.forEach((element) => this.processElement(element));
     });
   }
 
@@ -70,13 +73,13 @@ class AdaptiveContrast {
     const bgColor = styles.backgroundColor;
 
     // Skip transparent backgrounds
-    if (bgColor === 'rgba(0, 0, 0, 0)' || !bgColor) return;
+    if (bgColor === "rgba(0, 0, 0, 0)" || !bgColor) return;
 
     // Apply accessible colors
     try {
       const result = ContrastUtils.applyAccessibleColors(element, bgColor, {
         brandTokens: this.brandTokens,
-        minRatio: 4.5
+        minRatio: 4.5,
       });
 
       // Apply to child text if needed
@@ -84,7 +87,7 @@ class AdaptiveContrast {
         this.forceAccessibleText(element, bgColor);
       }
     } catch (error) {
-      console.warn('Error processing element:', element, error);
+      console.warn("Error processing element:", element, error);
     }
   }
 
@@ -96,16 +99,16 @@ class AdaptiveContrast {
   forceAccessibleText(element, bgColor) {
     const textColor = ContrastUtils.getAccessibleTextColor(bgColor, {
       lightText: this.brandTokens.cream50,
-      darkText: this.brandTokens.ink900
+      darkText: this.brandTokens.ink900,
     });
 
     // Apply to element
-    element.style.setProperty('color', textColor, 'important');
+    element.style.setProperty("color", textColor, "important");
 
     // Apply to direct text children
     const textNodes = this.getTextElements(element);
-    textNodes.forEach(node => {
-      node.style.setProperty('color', textColor, 'important');
+    textNodes.forEach((node) => {
+      node.style.setProperty("color", textColor, "important");
     });
   }
 
@@ -116,23 +119,21 @@ class AdaptiveContrast {
    */
   getTextElements(parent) {
     const elements = [];
-    const walker = document.createTreeWalker(
-      parent,
-      NodeFilter.SHOW_ELEMENT,
-      {
-        acceptNode: (node) => {
-          // Skip script, style, etc.
-          if (['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(node.tagName)) {
-            return NodeFilter.FILTER_REJECT;
-          }
-          // Accept if has text content
-          return node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+    const walker = document.createTreeWalker(parent, NodeFilter.SHOW_ELEMENT, {
+      acceptNode: (node) => {
+        // Skip script, style, etc.
+        if (["SCRIPT", "STYLE", "NOSCRIPT"].includes(node.tagName)) {
+          return NodeFilter.FILTER_REJECT;
         }
-      }
-    );
+        // Accept if has text content
+        return node.textContent.trim()
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP;
+      },
+    });
 
     let node;
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode())) {
       elements.push(node);
     }
     return elements;
@@ -143,9 +144,10 @@ class AdaptiveContrast {
    */
   observeChanges() {
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeType === 1) { // Element node
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            // Element node
             this.processElement(node);
           }
         });
@@ -154,7 +156,7 @@ class AdaptiveContrast {
 
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
 
     this.observer = observer;
@@ -172,25 +174,28 @@ class AdaptiveContrast {
 
     window.contrastDebug = (enable = true) => {
       if (enable) {
-        document.body.classList.add('contrast-debug');
-        console.log('%c🔍 Contrast Debug Mode ON', 'color: #f59e0b; font-weight: bold;');
-        console.log('Contrast ratios will be displayed on elements.');
+        document.body.classList.add("contrast-debug");
+        console.log(
+          "%c🔍 Contrast Debug Mode ON",
+          "color: #f59e0b; font-weight: bold;",
+        );
+        console.log("Contrast ratios will be displayed on elements.");
       } else {
-        document.body.classList.remove('contrast-debug');
-        console.log('%c✓ Contrast Debug Mode OFF', 'color: #10b981;');
+        document.body.classList.remove("contrast-debug");
+        console.log("%c✓ Contrast Debug Mode OFF", "color: #10b981;");
       }
     };
 
     window.contrastFix = () => {
       this.applyAdaptiveColors();
-      console.log('%c✓ Contrast fixes reapplied', 'color: #10b981;');
+      console.log("%c✓ Contrast fixes reapplied", "color: #10b981;");
     };
 
     // Log available commands
-    console.log('%cContrast Utilities Available:', 'font-weight: bold;');
-    console.log('  contrastAudit()  - Check all elements for contrast issues');
-    console.log('  contrastDebug()  - Toggle visual debugging mode');
-    console.log('  contrastFix()    - Reapply contrast fixes');
+    console.log("%cContrast Utilities Available:", "font-weight: bold;");
+    console.log("  contrastAudit()  - Check all elements for contrast issues");
+    console.log("  contrastDebug()  - Toggle visual debugging mode");
+    console.log("  contrastFix()    - Reapply contrast fixes");
   }
 
   /**
@@ -205,8 +210,8 @@ class AdaptiveContrast {
 }
 
 // Auto-initialize on DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
     const adaptiveContrast = new AdaptiveContrast();
     adaptiveContrast.init();
     window.adaptiveContrast = adaptiveContrast;

@@ -1,7 +1,7 @@
 /**
  * BarbershopHero - Premium React Component
  * Mobile-first, performance-optimized barber pole animation
- * 
+ *
  * Features:
  * - GPU-accelerated CSS animation (5.5s cycle)
  * - Responsive mobile-first design
@@ -10,12 +10,12 @@
  * - Zero external dependencies (pure React + CSS)
  */
 
-import React, { useEffect, useRef } from 'react';
-import './BarbershopHero.css';
+import React, { useEffect, useRef } from "react";
+import "./BarbershopHero.css";
 
 /**
  * BarbershopHero Component
- * 
+ *
  * @param {Object} props - Component props
  * @param {string} props.title - Main heading
  * @param {string} props.subtitle - Secondary heading
@@ -28,15 +28,15 @@ import './BarbershopHero.css';
  * @param {string} props.className - Additional CSS classes
  */
 const BarbershopHero = ({
-  title = 'Professional Barbershop',
-  subtitle = 'Precision. Patience. Virtue. Honor.',
-  year = '2024',
-  tagline = 'A CUT ABOVE',
-  variant = 'default',
+  title = "Professional Barbershop",
+  subtitle = "Precision. Patience. Virtue. Honor.",
+  year = "2024",
+  tagline = "A CUT ABOVE",
+  variant = "default",
   showAnimation = true,
   onAnimationToggle,
   children,
-  className = '',
+  className = "",
 }) => {
   const poleRef = useRef(null);
   const containerRef = useRef(null);
@@ -46,29 +46,32 @@ const BarbershopHero = ({
    * Respects user accessibility settings
    */
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const handleMotionPreference = (e) => {
       const shouldReduceMotion = e.matches;
       if (onAnimationToggle) {
         onAnimationToggle(!shouldReduceMotion);
       }
-      
+
       // Update aria-label for accessibility
       if (containerRef.current) {
         containerRef.current.setAttribute(
-          'aria-label',
-          shouldReduceMotion ? 'Barber pole (animation disabled)' : 'Barber pole with spinning animation'
+          "aria-label",
+          shouldReduceMotion
+            ? "Barber pole (animation disabled)"
+            : "Barber pole with spinning animation",
         );
       }
     };
 
-    mediaQuery.addEventListener('change', handleMotionPreference);
-    
+    mediaQuery.addEventListener("change", handleMotionPreference);
+
     // Check initial preference
     handleMotionPreference(mediaQuery);
 
-    return () => mediaQuery.removeEventListener('change', handleMotionPreference);
+    return () =>
+      mediaQuery.removeEventListener("change", handleMotionPreference);
   }, [onAnimationToggle]);
 
   /**
@@ -85,13 +88,7 @@ const BarbershopHero = ({
       aria-label="Spinning barber pole"
     >
       <defs>
-        <linearGradient
-          id="poleGradient"
-          x1="0%"
-          y1="0%"
-          x2="0%"
-          y2="100%"
-        >
+        <linearGradient id="poleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#fff" stopOpacity="1" />
           <stop offset="25%" stopColor="#c41e3a" stopOpacity="1" />
           <stop offset="50%" stopColor="#fff" stopOpacity="1" />
@@ -127,17 +124,10 @@ const BarbershopHero = ({
         </pattern>
       </defs>
       {/* Base white pole */}
-      <rect
-        rx="20"
-        ry="20"
-        width="80"
-        height="200"
-        fill="#fff"
-        stroke="none"
-      />
+      <rect rx="20" ry="20" width="80" height="200" fill="#fff" stroke="none" />
       {/* Animated spiral pattern */}
       <rect
-        className={`pole-spin ${showAnimation ? 'animate' : 'static'}`}
+        className={`pole-spin ${showAnimation ? "animate" : "static"}`}
         rx="20"
         ry="20"
         width="80"
@@ -163,9 +153,7 @@ const BarbershopHero = ({
    */
   const renderVisualContent = () => (
     <div className="visual-content">
-      <div className="barber-pole-container">
-        {renderBarberPole()}
-      </div>
+      <div className="barber-pole-container">{renderBarberPole()}</div>
       <div className="visual-text">
         <span className="est">EST. {year}</span>
         <h2 className="tagline">{tagline}</h2>
@@ -177,7 +165,7 @@ const BarbershopHero = ({
   /**
    * Default layout: text + visual side by side (desktop) or stacked (mobile)
    */
-  if (variant === 'default') {
+  if (variant === "default") {
     return (
       <section
         ref={containerRef}
@@ -222,7 +210,7 @@ const BarbershopHero = ({
   /**
    * Minimal layout: centered pole only
    */
-  if (variant === 'minimal') {
+  if (variant === "minimal") {
     return (
       <section
         ref={containerRef}

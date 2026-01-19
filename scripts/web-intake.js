@@ -1,25 +1,25 @@
 // FaithFrontier Express Web Interface for PDF Upload & Admin Review (legacy)
 
-import fs from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
-import express from 'express';
-import multer from 'multer';
-import pdf from 'pdf-parse';
-import yaml from 'js-yaml';
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import express from "express";
+import multer from "multer";
+import pdf from "pdf-parse";
+import yaml from "js-yaml";
 
 const app = express();
 const PORT = 4001;
 const repoRoot = process.cwd();
-const UPLOAD_DIR = path.join(repoRoot, '_inbox');
-const DOCKET_DATA_DIR = path.join(repoRoot, '_data', 'docket');
-const CASES_DIR = path.join(repoRoot, 'cases');
+const UPLOAD_DIR = path.join(repoRoot, "_inbox");
+const DOCKET_DATA_DIR = path.join(repoRoot, "_data", "docket");
+const CASES_DIR = path.join(repoRoot, "cases");
 
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const upload = multer({ dest: UPLOAD_DIR });
 
-app.use(express.static('public'));
+app.use(express.static("public"));
 app.use(express.json());
 
 // Helper: Extract metadata from filename
@@ -29,9 +29,9 @@ function parseFilename(filename) {
   if (match) {
     return {
       date: match[1],
-      type: match[2].replace(/-/g, ' '),
-      short: match[3].replace(/-/g, ' '),
-      complete: true
+      type: match[2].replace(/-/g, " "),
+      short: match[3].replace(/-/g, " "),
+      complete: true,
     };
   }
   return { complete: false };
@@ -40,14 +40,21 @@ function parseFilename(filename) {
 // Helper: Extract metadata from PDF text
 function extractMetaFromText(text) {
   const lines = text.split(/\r?\n/).slice(0, 20);
-  let date = null, type = null, short = null;
+  let date = null,
+    type = null,
+    short = null;
   for (const line of lines) {
     if (!date) {
       const d = line.match(/(\d{4}-\d{2}-\d{2})/);
       if (d) date = d[1];
     }
-    if (!type && /order|motion|complaint|notice|filing|judgment|appearance|petition|application/i.test(line)) {
-      type = line.trim().split(' ')[0];
+    if (
+      !type &&
+      /order|motion|complaint|notice|filing|judgment|appearance|petition|application/i.test(
+        line,
+      )
+    ) {
+      type = line.trim().split(" ")[0];
     }
     if (!short && line.length > 10 && line.length < 80) {
       short = line.trim();
@@ -57,27 +64,29 @@ function extractMetaFromText(text) {
 }
 
 // Upload endpoint
-app.post('/upload', upload.single('pdf'), async (req, res) => {
+app.post("/upload", upload.single("pdf"), async (req, res) => {
   const file = req.file;
-  if (!file) return res.status(400).json({ error: 'No file uploaded' });
+  if (!file) return res.status(400).json({ error: "No file uploaded" });
   let meta = parseFilename(file.originalname);
-  let text = '';
+  let text = "";
   if (!meta.complete) {
     try {
       const data = await pdf(fs.readFileSync(file.path));
       text = data.text;
       meta = { ...meta, ...extractMetaFromText(text) };
     } catch (e) {
-      return res.status(500).json({ error: 'Failed to parse PDF' });
+      return res.status(500).json({ error: "Failed to parse PDF" });
     }
   }
   res.json({ filename: file.filename, originalname: file.originalname, meta });
 });
 
 // Admin review endpoint (list all uploaded PDFs with extracted metadata)
-app.get('/review', (req, res) => {
-  const files = fs.readdirSync(UPLOAD_DIR).filter(f => f.toLowerCase().endsWith('.pdf'));
-  const review = files.map(f => {
+app.get("/review", (req, res) => {
+  const files = fs
+    .readdirSync(UPLOAD_DIR)
+    .filter((f) => f.toLowerCase().endsWith(".pdf"));
+  const review = files.map((f) => {
     const meta = parseFilename(f);
     return { file: f, meta };
   });
@@ -85,7 +94,7 @@ app.get('/review', (req, res) => {
 });
 
 // Serve a simple upload/review HTML page
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -142,5 +151,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`FaithFrontier PDF Intake Web running at http://localhost:${PORT}`);
+  console.log(
+    `FaithFrontier PDF Intake Web running at http://localhost:${PORT}`,
+  );
 });

@@ -28,6 +28,7 @@ This page preserves filings, responses, and correspondence. It does not assert f
 ## OPRAmachine Public Record
 
 This request is publicly tracked on OPRAmachine:
+
 - **View this request:** [Galloway Township OPRA Requests]({{ page.opramachine_url }})
 - **View all requests by filer:** [X (Devon Tyler of the Barber-Materio Family)]({{ page.opramachine_user }})
 
@@ -52,4 +53,3 @@ This request is publicly tracked on OPRAmachine:
 
 - Responsive records produced by the agency (PDF/CSV/XLSX/images/zips).
 - See: `productions/`
-

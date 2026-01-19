@@ -21,16 +21,19 @@ This Cloudflare Worker enables PR-based docket uploads from the `/docket/submit/
 ### 2. Deploy Worker to Cloudflare
 
 1. Install Wrangler CLI:
+
    ```bash
    npm install -g wrangler
    ```
 
 2. Login to Cloudflare:
+
    ```bash
    wrangler login
    ```
 
 3. Create a new worker:
+
    ```bash
    cd worker
    wrangler init docket-upload
@@ -40,22 +43,26 @@ This Cloudflare Worker enables PR-based docket uploads from the `/docket/submit/
 
 5. Configure the worker:
    - Create `wrangler.toml`:
+
      ```toml
      name = "docket-upload"
      main = "worker.js"
      compatibility_date = "2024-01-01"
-     
+
      [env.production]
      vars = { REPO_OWNER = "XTX33", REPO_NAME = "FaithFrontier" }
      ```
 
 6. Add the GitHub token as a secret:
+
    ```bash
    wrangler secret put GITHUB_PAT
    ```
+
    When prompted, paste your GitHub token
 
 7. Deploy:
+
    ```bash
    wrangler deploy
    ```
@@ -67,7 +74,8 @@ This Cloudflare Worker enables PR-based docket uploads from the `/docket/submit/
 Edit `/assets/js/docket-submit.js` and replace the placeholder URL with your worker URL:
 
 ```javascript
-const workerUrl = 'https://docket-upload.your-subdomain.workers.dev/docket-upload';
+const workerUrl =
+  "https://docket-upload.your-subdomain.workers.dev/docket-upload";
 ```
 
 ### 4. Configure CORS (if needed)

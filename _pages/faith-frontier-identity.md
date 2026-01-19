@@ -7,7 +7,7 @@ description: "Faith Frontier is a Christian, non-denominational witness to Jesus
 
 # Faith Frontier Identity & Beliefs
 
-Faith Frontier is **Christian** and **non-denominational**. We follow **Jesus Christ** as Lord and Savior, confessing His **life, death, and resurrection**, and acknowledging Him as *the way, the truth, and the life* (John 14:6). We affirm the **Trinity** — Father, Son, and Holy Spirit — and we are rooted in **Scripture**, guided by Biblical principles rather than bound to any single human denomination.
+Faith Frontier is **Christian** and **non-denominational**. We follow **Jesus Christ** as Lord and Savior, confessing His **life, death, and resurrection**, and acknowledging Him as _the way, the truth, and the life_ (John 14:6). We affirm the **Trinity** — Father, Son, and Holy Spirit — and we are rooted in **Scripture**, guided by Biblical principles rather than bound to any single human denomination.
 
 ## How We Arrived Here
 

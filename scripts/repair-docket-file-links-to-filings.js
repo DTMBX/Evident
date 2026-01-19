@@ -1,17 +1,17 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import process from 'node:process';
-import yaml from 'js-yaml';
+import fs from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+import yaml from "js-yaml";
 
 const repoRoot = process.cwd();
-const docketDir = path.join(repoRoot, '_data', 'docket');
+const docketDir = path.join(repoRoot, "_data", "docket");
 
 function parseArgs(argv) {
   const args = { dryRun: false, only: null };
   for (let i = 2; i < argv.length; i += 1) {
     const arg = argv[i];
-    if (arg === '--dry-run') args.dryRun = true;
-    if (arg === '--only') {
+    if (arg === "--dry-run") args.dryRun = true;
+    if (arg === "--only") {
       args.only = argv[i + 1];
       i += 1;
     }
@@ -31,10 +31,10 @@ async function exists(filePath) {
 function normalizeTokens(text) {
   return String(text)
     .toLowerCase()
-    .replace(/\.pdf$/i, '')
-    .replace(/\d{4}-\d{2}-\d{2}/g, ' ')
-    .replace(/\d{8}/g, ' ')
-    .replace(/\d{2}-\d{2}-\d{4}/g, ' ')
+    .replace(/\.pdf$/i, "")
+    .replace(/\d{4}-\d{2}-\d{2}/g, " ")
+    .replace(/\d{8}/g, " ")
+    .replace(/\d{2}-\d{2}-\d{4}/g, " ")
     .split(/[^a-z0-9]+/g)
     .map((t) => t.trim())
     .filter(Boolean);
@@ -61,8 +61,8 @@ function dateVariants(dateStr) {
 
 async function listPdfCandidates(slug) {
   const dirs = [
-    path.join(repoRoot, 'cases', slug, 'filings'),
-    path.join(repoRoot, 'cases', slug),
+    path.join(repoRoot, "cases", slug, "filings"),
+    path.join(repoRoot, "cases", slug),
   ];
 
   const candidates = [];
@@ -71,12 +71,12 @@ async function listPdfCandidates(slug) {
     const entries = await fs.readdir(dir, { withFileTypes: true });
     for (const entry of entries) {
       if (!entry.isFile()) continue;
-      if (!entry.name.toLowerCase().endsWith('.pdf')) continue;
+      if (!entry.name.toLowerCase().endsWith(".pdf")) continue;
       candidates.push({
         filename: entry.name,
         absPath: path.join(dir, entry.name),
         // we always publish with a /cases/<slug>/filings/<file> link when possible
-        preferredUrl: dir.endsWith(path.join('cases', slug, 'filings'))
+        preferredUrl: dir.endsWith(path.join("cases", slug, "filings"))
           ? `/cases/${slug}/filings/${encodeURI(entry.name)}`
           : `/cases/${slug}/${encodeURI(entry.name)}`,
       });
@@ -87,8 +87,11 @@ async function listPdfCandidates(slug) {
 
 function preserveHeader(rawText) {
   const idx = rawText.search(/^\s*-\s+id\s*:/m);
-  if (idx <= 0) return { header: '', body: rawText };
-  return { header: rawText.slice(0, idx).replace(/\s+$/g, ''), body: rawText.slice(idx) };
+  if (idx <= 0) return { header: "", body: rawText };
+  return {
+    header: rawText.slice(0, idx).replace(/\s+$/g, ""),
+    body: rawText.slice(idx),
+  };
 }
 
 function preferDecodeUrl(url) {
@@ -100,20 +103,28 @@ function preferDecodeUrl(url) {
 }
 
 async function repairOneDocketFile(absYmlPath, args) {
-  const slug = path.basename(absYmlPath).replace(/\.yml$/i, '');
-  if (args.only && slug !== args.only) return { slug, changed: false, fixes: 0, skipped: 0 };
+  const slug = path.basename(absYmlPath).replace(/\.yml$/i, "");
+  if (args.only && slug !== args.only)
+    return { slug, changed: false, fixes: 0, skipped: 0 };
 
-  const raw = await fs.readFile(absYmlPath, 'utf8');
+  const raw = await fs.readFile(absYmlPath, "utf8");
   const { header } = preserveHeader(raw);
 
   let data;
   try {
     data = yaml.load(raw, { schema: yaml.FAILSAFE_SCHEMA });
   } catch {
-    return { slug, changed: false, fixes: 0, skipped: 0, error: 'yaml-parse-error' };
+    return {
+      slug,
+      changed: false,
+      fixes: 0,
+      skipped: 0,
+      error: "yaml-parse-error",
+    };
   }
 
-  if (!Array.isArray(data)) return { slug, changed: false, fixes: 0, skipped: 0 };
+  if (!Array.isArray(data))
+    return { slug, changed: false, fixes: 0, skipped: 0 };
 
   const candidates = await listPdfCandidates(slug);
   const candidateByAbs = new Map(candidates.map((c) => [c.absPath, c]));
@@ -123,12 +134,19 @@ async function repairOneDocketFile(absYmlPath, args) {
   let changed = false;
 
   for (const entry of data) {
-    if (!entry || typeof entry !== 'object') continue;
-    if (typeof entry.file !== 'string' || !entry.file.toLowerCase().includes('.pdf')) continue;
+    if (!entry || typeof entry !== "object") continue;
+    if (
+      typeof entry.file !== "string" ||
+      !entry.file.toLowerCase().includes(".pdf")
+    )
+      continue;
 
     const fileUrl = entry.file;
-    const normalizedUrl = fileUrl.startsWith('/') ? fileUrl : `/${fileUrl}`;
-    const repoPath = path.join(repoRoot, preferDecodeUrl(normalizedUrl).slice(1));
+    const normalizedUrl = fileUrl.startsWith("/") ? fileUrl : `/${fileUrl}`;
+    const repoPath = path.join(
+      repoRoot,
+      preferDecodeUrl(normalizedUrl).slice(1),
+    );
     if (await exists(repoPath)) {
       // Already points to a real repo file (still might not be in _site, but Jekyll should copy it)
       continue;
@@ -139,7 +157,9 @@ async function repairOneDocketFile(absYmlPath, args) {
 
     let filtered = candidates;
     if (dv.length > 0) {
-      filtered = candidates.filter((c) => dv.some((v) => c.filename.startsWith(v)));
+      filtered = candidates.filter((c) =>
+        dv.some((v) => c.filename.startsWith(v)),
+      );
       if (filtered.length === 0) filtered = candidates;
     }
 
@@ -172,11 +192,15 @@ async function repairOneDocketFile(absYmlPath, args) {
 
   if (!changed) return { slug, changed: false, fixes, skipped };
 
-  const dumped = yaml.dump(data, { lineWidth: 1000, noRefs: true, sortKeys: false });
+  const dumped = yaml.dump(data, {
+    lineWidth: 1000,
+    noRefs: true,
+    sortKeys: false,
+  });
   const output = header ? `${header}\n\n${dumped}` : dumped;
 
   if (!args.dryRun) {
-    await fs.writeFile(absYmlPath, output, 'utf8');
+    await fs.writeFile(absYmlPath, output, "utf8");
   }
 
   return { slug, changed: true, fixes, skipped };
@@ -185,13 +209,13 @@ async function repairOneDocketFile(absYmlPath, args) {
 async function main() {
   const args = parseArgs(process.argv);
   if (!(await exists(docketDir))) {
-    console.error('Missing _data/docket directory');
+    console.error("Missing _data/docket directory");
     process.exitCode = 2;
     return;
   }
 
   const ymlFiles = (await fs.readdir(docketDir))
-    .filter((f) => f.toLowerCase().endsWith('.yml'))
+    .filter((f) => f.toLowerCase().endsWith(".yml"))
     .map((f) => path.join(docketDir, f));
 
   const results = [];
@@ -207,10 +231,12 @@ async function main() {
     console.log(`${r.slug}: fixed ${r.fixes}, skipped ${r.skipped}`);
   }
 
-  console.log(`Total: changed ${changed.length}/${results.length} docket files; fixed ${totalFixes}; skipped ${totalSkipped}`);
+  console.log(
+    `Total: changed ${changed.length}/${results.length} docket files; fixed ${totalFixes}; skipped ${totalSkipped}`,
+  );
 
   if (args.dryRun) {
-    console.log('Dry run only (no files written).');
+    console.log("Dry run only (no files written).");
   }
 
   // non-zero if there were still skips (means review still needed)

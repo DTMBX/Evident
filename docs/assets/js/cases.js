@@ -27,30 +27,36 @@ function scoreMatch(query, text) {
 function render(query) {
   const q = (query || "").trim();
   const rows = data
-    .map(item => {
+    .map((item) => {
       const text = item.text || item.snippet || "";
-      const s = scoreMatch(q, `${item.title}\n${item.caseId}\n${item.tags?.join(" ")}\n${text}`);
+      const s = scoreMatch(
+        q,
+        `${item.title}\n${item.caseId}\n${item.tags?.join(" ")}\n${text}`,
+      );
       return { item, s };
     })
-    .filter(x => q ? x.s > 0 : true)
-    .sort((a,b) => b.s - a.s)
+    .filter((x) => (q ? x.s > 0 : true))
+    .sort((a, b) => b.s - a.s)
     .slice(0, 50);
 
   $meta.textContent = data.length
     ? `${rows.length} result(s) shown • ${data.length} document(s) indexed`
     : "Loading index…";
 
-  $results.innerHTML = rows.map(({item, s}) => {
-    const tags = (item.tags || []).slice(0, 6);
-    const ocr = item.ocrNeeded ? `<span class="badge">OCR needed</span>` : "";
-    const ok = item.ok ? "" : `<span class="badge">Index error</span>`;
-    const err = item.error ? `<div class="snip">Index error: ${item.error}</div>` : "";
-    return `
+  $results.innerHTML = rows
+    .map(({ item, s }) => {
+      const tags = (item.tags || []).slice(0, 6);
+      const ocr = item.ocrNeeded ? `<span class="badge">OCR needed</span>` : "";
+      const ok = item.ok ? "" : `<span class="badge">Index error</span>`;
+      const err = item.error
+        ? `<div class="snip">Index error: ${item.error}</div>`
+        : "";
+      return `
       <div class="card">
         <h3>${escapeHtml(item.title || item.caseId || "Untitled")}</h3>
         <div class="badges">
           <span class="badge">${escapeHtml(item.caseId || "")}</span>
-          ${tags.map(t => `<span class="badge">${escapeHtml(t)}</span>`).join("")}
+          ${tags.map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")}
           ${ocr}
           ${ok}
           ${q ? `<span class="badge">score: ${s}</span>` : ""}
@@ -62,13 +68,22 @@ function render(query) {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 }
 
 function escapeHtml(s) {
-  return (s || "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[c]));
+  return (s || "").replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      })[c],
+  );
 }
 
 async function init() {
@@ -79,7 +94,7 @@ async function init() {
 }
 
 $q.addEventListener("input", () => render($q.value));
-init().catch(err => {
+init().catch((err) => {
   $meta.textContent = "Failed to load index.json";
   $results.innerHTML = `<div class="card"><div class="snip">${escapeHtml(String(err))}</div></div>`;
 });

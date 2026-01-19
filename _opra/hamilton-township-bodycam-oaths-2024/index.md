@@ -26,6 +26,7 @@ This administrative record documents an internal review request concerning body 
 ## OPRAmachine Public Record
 
 This request is publicly tracked on OPRAmachine:
+
 - **View this request:** [Hamilton Township OPRA Requests]({{ page.opramachine_url }})
 - **View all requests by filer:** [X (Devon Tyler of the Barber-Materio Family)]({{ page.opramachine_user }})
 
@@ -35,8 +36,6 @@ This request is publicly tracked on OPRAmachine:
 - Awaiting response
 
 ## Timeline
-
-
 
 ## Documents
 

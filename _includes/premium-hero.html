@@ -1,13 +1,20 @@
-<section class="premium-hero" role="banner" aria-labelledby="premium-hero-title">
+<section
+  class="premium-hero"
+  role="banner"
+  aria-labelledby="premium-hero-title"
+>
   <div class="premium-hero__container">
     <div class="premium-hero__inner">
-      
       {% if page.hero_eyebrow %}
       <div class="premium-hero__eyebrow">
         {% if page.hero_eyebrow_icon %}
-        <object type="image/svg+xml" data="/assets/img/logo-faithfrontier-header-fixed.svg" class="premium-hero__mark" aria-label="Faith Frontier crest logo"></object>
-        {% endif %}
-        {{ page.hero_eyebrow }}
+        <object
+          type="image/svg+xml"
+          data="/assets/img/logo-faithfrontier-header-fixed.svg"
+          class="premium-hero__mark"
+          aria-label="Faith Frontier crest logo"
+        ></object>
+        {% endif %} {{ page.hero_eyebrow }}
       </div>
       {% endif %}
 
@@ -16,31 +23,40 @@
       </h1>
 
       {% if page.hero_summary %}
-      <p class="premium-hero__lead">
-        {{ page.hero_summary }}
-      </p>
-      {% endif %}
-
-      {% if page.hero_primary_url or page.hero_secondary_url %}
+      <p class="premium-hero__lead">{{ page.hero_summary }}</p>
+      {% endif %} {% if page.hero_primary_url or page.hero_secondary_url %}
       <div class="premium-hero__actions">
         {% if page.hero_primary_url and page.hero_primary_label %}
-        <a href="{{ page.hero_primary_url | relative_url }}" class="premium-hero__button premium-hero__button--primary">
+        <a
+          href="{{ page.hero_primary_url | relative_url }}"
+          class="premium-hero__button premium-hero__button--primary"
+        >
           {{ page.hero_primary_label }}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
         </a>
-        {% endif %}
-        {% if page.hero_secondary_url and page.hero_secondary_label %}
-        <a href="{{ page.hero_secondary_url | relative_url }}" class="premium-hero__button premium-hero__button--secondary">
+        {% endif %} {% if page.hero_secondary_url and page.hero_secondary_label
+        %}
+        <a
+          href="{{ page.hero_secondary_url | relative_url }}"
+          class="premium-hero__button premium-hero__button--secondary"
+        >
           {{ page.hero_secondary_label }}
         </a>
         {% endif %}
       </div>
-      {% endif %}
-
-      {% if page.hero_highlights %}
+      {% endif %} {% if page.hero_highlights %}
       <div class="premium-hero__highlights">
         {% for highlight in page.hero_highlights %}
         <article class="premium-hero__card">
@@ -50,7 +66,6 @@
         {% endfor %}
       </div>
       {% endif %}
-
     </div>
   </div>
 

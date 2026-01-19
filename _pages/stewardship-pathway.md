@@ -16,6 +16,7 @@ Faith Frontier invites you into a **journey of transformation**—where transpar
 ## The Four Levels
 
 ### Level 1: Observer — See the Work
+
 **Current location: You are here**
 
 Browse freely. See how Faith Frontier operates:
@@ -38,20 +39,23 @@ This is what accountability looks like. Every decision documented. Every case pu
 Faith Frontier's work rests on three foundations:
 
 #### 1. Constitution & Conscience
+
 **Cases as Teaching Tools**
 
-Our legal battles aren't just about winning—they're about *revealing*:
+Our legal battles aren't just about winning—they're about _revealing_:
 
 - How **due process** protects the powerless
 - How **constitutional rights** apply to everyday people
 - How **procedure** is mercy when followed, tyranny when ignored
 
 **Study path:**
+
 - Read [Revelations](/essays/revelations/) - principles woven through our cases
 - Explore individual case narratives
 - See how law and faith intersect
 
 #### 2. Land & Law
+
 **Property Stewardship Principles**
 
 Land isn't just real estate—it's **sacred trust**:
@@ -62,11 +66,13 @@ Land isn't just real estate—it's **sacred trust**:
 - Environmental and social responsibility
 
 **Study path:**
+
 - Review [How We Discern Properties](/scout/how-we-discern-properties/)
 - Understand the scoring criteria
 - See the separation between Faith Frontier Trust (acquisition) and Tillerstead LLC (construction)
 
 #### 3. Faith & Practice
+
 **Theological Foundation**
 
 Our faith isn't private—it's **public witness**:
@@ -77,6 +83,7 @@ Our faith isn't private—it's **public witness**:
 - Sabbath as resistance to exploitation
 
 **Study path:**
+
 - Read [Tiller Earth](/essays/tiller-earth/) - theological framework
 - Explore [Geneva Law Integration](/essays/geneva-law-integration/)
 - Consider [Constitution as Covenant](/essays/constitution-as-covenant/)
@@ -96,11 +103,13 @@ Move from learning to doing.
 #### Ways to Participate
 
 **Prayer Partnership**
+
 - Join weekly prayer gatherings (virtual/in-person)
 - Receive prayer requests for active cases
 - Intercede for residents and municipalities
 
 **Volunteer Opportunities**
+
 - Property maintenance and rehabilitation
 - Administrative support (filing, correspondence, research)
 - Skills training instructor (if qualified)
@@ -108,6 +117,7 @@ Move from learning to doing.
 
 **Skills Inventory**
 Tell us what you bring:
+
 - Construction/trades (carpentry, electrical, plumbing)
 - Legal/paralegal background
 - Social work or counseling
@@ -117,6 +127,7 @@ Tell us what you bring:
 
 **Housing Applications**
 If you're experiencing housing instability:
+
 - [Learn about our Emergency Housing program](/programs/emergency-housing/)
 - Apply for transitional placement
 - Begin your journey from resident to steward
@@ -138,18 +149,21 @@ Stewards are the **core team** of Faith Frontier—not employees, but co-laborer
 #### What Stewards Do
 
 **Property Stewardship:**
+
 - Live on or oversee Faith Frontier land
 - Maintain buildings, grounds, and equipment
 - Welcome residents and coordinate housing placements
 - Report needs and progress to Trust leadership
 
 **Community Stewardship:**
+
 - Mentor new participants and residents
 - Lead prayer gatherings and Bible studies (if called)
 - Represent Faith Frontier to neighbors and municipalities
 - Build relationships with local churches and nonprofits
 
 **Mission Stewardship:**
+
 - Participate in Trust governance (where appropriate)
 - Advocate for policies that advance justice and dignity
 - Tell the Faith Frontier story with transparency and humility
@@ -166,6 +180,7 @@ Becoming a steward requires:
 5. **Ongoing accountability** through regular meetings and reporting
 
 **Stewards receive:**
+
 - Housing (on Faith Frontier properties)
 - Stipend or employment (where applicable)
 - Training and professional development
@@ -186,6 +201,7 @@ Faith Frontier doesn't offer **quick fixes** or **transactional charity**. We of
 - **Community through covenant**
 
 We believe people change by:
+
 1. **Seeing** integrity modeled (Observer)
 2. **Learning** principles that endure (Learner)
 3. **Doing** meaningful work (Participant)
@@ -212,6 +228,7 @@ Contact: [to be added]
 ---
 
 **Related Pages:**
+
 - [Emergency Housing Program](/programs/emergency-housing/)
 - [Government Partnerships](/government-partnerships/)
 - [Cases](/cases/) - See our track record

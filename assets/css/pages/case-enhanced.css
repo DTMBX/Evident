@@ -606,7 +606,7 @@
     margin: 0 -1rem 1.5rem;
     padding: 0.5rem 1rem;
   }
-  
+
   .case-quick-nav__label {
     display: none;
   }
@@ -642,7 +642,7 @@
     color: var(--pure-black);
     background: var(--pure-white);
   }
-  
+
   .case-quick-nav {
     display: none;
   }

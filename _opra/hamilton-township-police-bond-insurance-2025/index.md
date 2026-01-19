@@ -26,6 +26,7 @@ This record documents an OPRA request for law enforcement bond and insurance rec
 ## OPRAmachine Public Record
 
 This request is publicly tracked on OPRAmachine:
+
 - **View this request:** [Hamilton Township OPRA Requests]({{ page.opramachine_url }})
 - **View all requests by filer:** [X (Devon Tyler of the Barber-Materio Family)]({{ page.opramachine_user }})
 
@@ -36,8 +37,6 @@ This request is publicly tracked on OPRAmachine:
 - Awaiting corrected delivery
 
 ## Timeline
-
-
 
 ## Documents
 

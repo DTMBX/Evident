@@ -833,9 +833,9 @@ states:
 
 # Color scale for map visualization
 color_scale:
-  low: "#90EE90"      # Light green (moderate Rx)
+  low: "#90EE90" # Light green (moderate Rx)
   moderate: "#FFD700" # Gold (higher Rx)
-  high: "#FF8C00"     # Dark orange (very high Rx)
+  high: "#FF8C00" # Dark orange (very high Rx)
   very_high: "#DC143C" # Crimson (crisis level)
 
 # Percentage thresholds for color assignment

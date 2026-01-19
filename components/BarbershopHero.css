@@ -21,7 +21,7 @@
   --hero-border-dark: #424245;
   --hero-shadow-light: rgba(0, 0, 0, 0.08);
   --hero-shadow-dark: rgba(0, 0, 0, 0.32);
-  
+
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
@@ -29,9 +29,11 @@
   --spacing-lg: 2rem;
   --spacing-xl: 2.5rem;
   --spacing-2xl: 3rem;
-  
+
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -42,19 +44,19 @@
   --line-height-tight: 1.2;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px var(--hero-shadow-light);
   --shadow-md: 0 2px 8px var(--hero-shadow-light);
   --shadow-lg: 0 4px 16px var(--hero-shadow-light);
   --shadow-xl: 0 8px 24px var(--hero-shadow-light);
-  
+
   /* Animation */
   --duration-normal: 0.3s;
   --duration-slow: 0.5s;
   --easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --easing-out: cubic-bezier(0, 0, 0.2, 1);
-  
+
   /* Barber pole animation duration */
   --animation-duration: 5.5s;
 }
@@ -80,7 +82,11 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-md);
-  background: linear-gradient(135deg, var(--hero-bg-light) 0%, rgba(212, 175, 55, 0.03) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--hero-bg-light) 0%,
+    rgba(212, 175, 55, 0.03) 100%
+  );
   font-family: var(--font-sans);
   color: var(--hero-text-dark);
   overflow: hidden;
@@ -222,7 +228,7 @@
   transition: all var(--duration-normal) var(--easing-in-out);
   outline: none;
   text-decoration: none;
-  
+
   will-change: transform, background-color, border-color;
 }
 
@@ -282,11 +288,11 @@
   .barbershop-hero {
     padding: var(--spacing-lg);
   }
-  
+
   .hero-content h1 {
     font-size: calc(var(--font-size-2xl) * 1.1);
   }
-  
+
   .hero-title {
     font-size: calc(var(--font-size-xl) * 1.05);
   }
@@ -298,15 +304,15 @@
     padding: var(--spacing-2xl) var(--spacing-lg);
     min-height: auto;
   }
-  
+
   .hero-content h1 {
     font-size: var(--font-size-3xl);
   }
-  
+
   .hero-title {
     font-size: calc(var(--font-size-xl) * 1.15);
   }
-  
+
   /* Full variant layout switches to grid at 640px */
   .barbershop-hero--full .hero-inner {
     grid-template-columns: 1fr 1fr;
@@ -320,12 +326,12 @@
     min-height: 100vh;
     padding: var(--spacing-2xl);
   }
-  
+
   .hero-inner {
     max-width: 1200px;
     margin: 0 auto;
   }
-  
+
   .barbershop-hero--full .hero-inner {
     grid-template-columns: 1fr 1.2fr;
   }
@@ -334,13 +340,17 @@
 /* ===== Dark Mode Support ===== */
 @media (prefers-color-scheme: dark) {
   .barbershop-hero {
-    background: linear-gradient(135deg, var(--hero-bg-dark) 0%, rgba(212, 175, 55, 0.05) 100%);
+    background: linear-gradient(
+      135deg,
+      var(--hero-bg-dark) 0%,
+      rgba(212, 175, 55, 0.05) 100%
+    );
   }
-  
+
   .hero-cta {
     color: var(--hero-bg-dark);
   }
-  
+
   .hero-cta:hover,
   .hero-cta:focus {
     background: rgba(212, 175, 55, 0.85);
@@ -356,7 +366,7 @@
     animation: none !important;
     transition: none !important;
   }
-  
+
   .hero-visual svg {
     opacity: 0.8;
   }
@@ -380,7 +390,7 @@
     min-height: auto;
     page-break-inside: avoid;
   }
-  
+
   .hero-visual svg {
     animation: none;
     filter: none;

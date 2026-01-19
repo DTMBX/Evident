@@ -3,6 +3,7 @@ layout: default
 title: Development Status
 permalink: /docs/status/
 ---
+
 <article class="md" role="article">
   <header class="md-header">
     <h1 class="md-title">Barber Cam - Project Status</h1>
@@ -48,13 +49,13 @@ This project combines precision tools with principled governance to preserve acc
 
 ## Development Timeline
 
-|Phase|Status|Description|
-|---|---|---|
-|Phase 1|✅ Complete|Core principles and governance framework established|
-|Phase 2|✅ Complete|System design and security protocols defined|
-|Phase 3|🔄 In Progress|Building core functionality with local server integration|
-|Phase 4|⏳ Pending|Security audit and ethical review|
-|Phase 5|⏳ Pending|Public beta release with full documentation|
+| Phase   | Status         | Description                                               |
+| ------- | -------------- | --------------------------------------------------------- |
+| Phase 1 | ✅ Complete    | Core principles and governance framework established      |
+| Phase 2 | ✅ Complete    | System design and security protocols defined              |
+| Phase 3 | 🔄 In Progress | Building core functionality with local server integration |
+| Phase 4 | ⏳ Pending     | Security audit and ethical review                         |
+| Phase 5 | ⏳ Pending     | Public beta release with full documentation               |
 
 ---
 
@@ -87,14 +88,14 @@ This project combines precision tools with principled governance to preserve acc
 
 Public release will occur **only after** all of the following are complete:
 
-| Requirement | Status | Description |
-| --- | --- | --- |
-| Core Safeguards | ✅ Designed | Technical protections for privacy and security |
-| Governance Policies | ✅ Documented | Clear rules for ethical operation |
-| Ethical Use Standards | ✅ Established | Prohibited uses and accountability measures |
-| Security Audit | ⏳ Pending | Independent review of security architecture |
-| Privacy Verification | ⏳ Pending | Confirmation of data protection measures |
-| Beta Testing | ⏳ Pending | Real-world validation with limited users |
+| Requirement           | Status         | Description                                    |
+| --------------------- | -------------- | ---------------------------------------------- |
+| Core Safeguards       | ✅ Designed    | Technical protections for privacy and security |
+| Governance Policies   | ✅ Documented  | Clear rules for ethical operation              |
+| Ethical Use Standards | ✅ Established | Prohibited uses and accountability measures    |
+| Security Audit        | ⏳ Pending     | Independent review of security architecture    |
+| Privacy Verification  | ⏳ Pending     | Confirmation of data protection measures       |
+| Beta Testing          | ⏳ Pending     | Real-world validation with limited users       |
 
 ---
 

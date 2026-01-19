@@ -22,7 +22,6 @@ topics:
 public_visibility: "Public record thread (OPRAmachine); internal notes kept separate"
 ---
 
-
 ## Record purpose
 
 This administrative record documents OPRA requests to the New Jersey Turnpike Authority concerning toll enforcement operations, vendor relationships, and data-security practices.
@@ -30,6 +29,7 @@ This administrative record documents OPRA requests to the New Jersey Turnpike Au
 ## OPRAmachine Public Record
 
 This request is publicly tracked on OPRAmachine:
+
 - **View this request:** [NJ Turnpike Authority OPRA Requests]({{ page.opramachine_url }})
 - **View all requests by filer:** [X (Devon Tyler of the Barber-Materio Family)]({{ page.opramachine_user }})
 
@@ -39,8 +39,6 @@ This request is publicly tracked on OPRAmachine:
 - Awaiting response
 
 ## Timeline
-
-
 
 ## Documents
 

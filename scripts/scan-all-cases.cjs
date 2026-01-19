@@ -2,20 +2,22 @@
 // Scans all folders under /cases for PDFs, normalizes, analyzes, and updates dockets/README
 // Requires: npm install pdf-parse js-yaml
 
-const fs = require('fs');
-const path = require('path');
-const pdf = require('pdf-parse');
-const yaml = require('js-yaml');
+const fs = require("fs");
+const path = require("path");
+const pdf = require("pdf-parse");
+const yaml = require("js-yaml");
 
-const CASES_ROOT = path.join(__dirname, '../cases');
+const CASES_ROOT = path.join(__dirname, "../cases");
 
 function getAllCaseFolders(root) {
-  return fs.readdirSync(root).filter(f => fs.statSync(path.join(root, f)).isDirectory());
+  return fs
+    .readdirSync(root)
+    .filter((f) => fs.statSync(path.join(root, f)).isDirectory());
 }
 
-function getAllFilesRecursive(dir, ext = '.pdf') {
+function getAllFilesRecursive(dir, ext = ".pdf") {
   let results = [];
-  fs.readdirSync(dir).forEach(f => {
+  fs.readdirSync(dir).forEach((f) => {
     const full = path.join(dir, f);
     if (fs.statSync(full).isDirectory()) {
       results = results.concat(getAllFilesRecursive(full, ext));
@@ -32,29 +34,32 @@ function normalizeFilename(filename) {
   const match = filename.match(re);
   if (match) {
     const date = `${match[1]}${match[2]}${match[3]}`;
-    const rest = filename.replace(re, '').replace(/^[^a-zA-Z0-9]+/, '').replace(/\.pdf$/i, '');
-    return `${match[1]}-${match[2]}-${match[3]}${rest ? '-' + rest : ''}.pdf`;
+    const rest = filename
+      .replace(re, "")
+      .replace(/^[^a-zA-Z0-9]+/, "")
+      .replace(/\.pdf$/i, "");
+    return `${match[1]}-${match[2]}-${match[3]}${rest ? "-" + rest : ""}.pdf`;
   }
   return filename;
 }
 
 function updateDocketYaml(caseDir, filings) {
-  const ymlPath = path.join(caseDir, 'docket.yml');
+  const ymlPath = path.join(caseDir, "docket.yml");
   let entries = [];
   if (fs.existsSync(ymlPath)) {
-    entries = yaml.load(fs.readFileSync(ymlPath, 'utf8')) || [];
+    entries = yaml.load(fs.readFileSync(ymlPath, "utf8")) || [];
   }
   // Remove old entries for files no longer present
-  entries = entries.filter(e => filings.some(f => f.file === e.file));
+  entries = entries.filter((e) => filings.some((f) => f.file === e.file));
   // Add new filings
   for (const f of filings) {
-    if (!entries.some(e => e.file === f.file)) {
+    if (!entries.some((e) => e.file === f.file)) {
       entries.push({
-        id: `${f.file.replace(/\.pdf$/, '')}`,
-        date: f.date || '',
-        type: f.type || '',
-        title: f.title || '',
-        file: f.file
+        id: `${f.file.replace(/\.pdf$/, "")}`,
+        date: f.date || "",
+        type: f.type || "",
+        title: f.title || "",
+        file: f.file,
       });
     }
   }
@@ -62,7 +67,7 @@ function updateDocketYaml(caseDir, filings) {
 }
 
 function updateReadme(caseDir, filings) {
-  const readmePath = path.join(caseDir, 'README.md');
+  const readmePath = path.join(caseDir, "README.md");
   let md = `# ${path.basename(caseDir)}\n\n## Filings Index\n`;
   for (const f of filings) {
     md += `- [${f.file}](./${path.relative(caseDir, f.fullPath)})\n`;
@@ -83,11 +88,11 @@ async function analyzeAndNormalizeCase(caseDir) {
     let meta = { file: normName, fullPath: normPath };
     try {
       const data = await pdf(fs.readFileSync(normPath));
-      meta.title = data.info && data.info.Title ? data.info.Title : '';
-      meta.date = (normName.match(/\d{4}-\d{2}-\d{2}/) || [])[0] || '';
-      meta.type = meta.title || '';
+      meta.title = data.info && data.info.Title ? data.info.Title : "";
+      meta.date = (normName.match(/\d{4}-\d{2}-\d{2}/) || [])[0] || "";
+      meta.type = meta.title || "";
     } catch (e) {
-      meta.title = '';
+      meta.title = "";
     }
     filings.push(meta);
   }
@@ -101,7 +106,7 @@ async function main() {
   for (const folder of caseFolders) {
     await analyzeAndNormalizeCase(path.join(CASES_ROOT, folder));
   }
-  console.log('All case folders scanned and updated.');
+  console.log("All case folders scanned and updated.");
 }
 
 main();

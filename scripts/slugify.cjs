@@ -1,15 +1,15 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function slugify(text) {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function walk(dir) {
-  fs.readdirSync(dir).forEach(file => {
+  fs.readdirSync(dir).forEach((file) => {
     const full = path.join(dir, file);
     if (fs.lstatSync(full).isDirectory()) return walk(full);
 
@@ -20,4 +20,4 @@ function walk(dir) {
   });
 }
 
-walk('_cases');
+walk("_cases");

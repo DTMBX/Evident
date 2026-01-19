@@ -32,10 +32,13 @@ async function collectMarkdownFiles(dir) {
 function stripCodeBlocks(content) {
   // Strip code blocks with exactly 4 backticks (nested code examples)
   // Allow optional leading whitespace for indented blocks
-  let result = content.replace(/^[ \t]*````[^\n]*\n[\s\S]*?^[ \t]*````[ \t]*$/gm, "");
+  let result = content.replace(
+    /^[ \t]*````[^\n]*\n[\s\S]*?^[ \t]*````[ \t]*$/gm,
+    "",
+  );
   // Then strip regular 3-backtick code blocks (exactly 3, not more)
   result = result.replace(/^[ \t]*```[^\n]*\n[\s\S]*?^[ \t]*```[ \t]*$/gm, "");
-  // Strip tilde code blocks  
+  // Strip tilde code blocks
   result = result.replace(/^[ \t]*~~~[^\n]*\n[\s\S]*?^[ \t]*~~~[ \t]*$/gm, "");
   // Strip HTML style tags
   result = result.replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "");
