@@ -292,6 +292,72 @@ class APIKey(db.Model):
         }
 
 
+class AppSettings(db.Model):
+    """Application settings and configuration"""
+    __tablename__ = 'app_settings'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    value = db.Column(db.Text)
+    value_type = db.Column(db.String(20), default='string')  # string, int, float, bool, json
+    category = db.Column(db.String(50), default='general')  # general, security, features, limits, email, branding
+    description = db.Column(db.String(500))
+    is_editable = db.Column(db.Boolean, default=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    @staticmethod
+    def get(key, default=None):
+        """Get setting value by key"""
+        setting = AppSettings.query.filter_by(key=key).first()
+        if not setting:
+            return default
+        
+        # Convert based on type
+        if setting.value_type == 'bool':
+            return setting.value.lower() in ('true', '1', 'yes')
+        elif setting.value_type == 'int':
+            return int(setting.value)
+        elif setting.value_type == 'float':
+            return float(setting.value)
+        elif setting.value_type == 'json':
+            import json
+            return json.loads(setting.value)
+        return setting.value
+    
+    @staticmethod
+    def set(key, value, value_type='string', category='general', description=''):
+        """Set or update setting value"""
+        setting = AppSettings.query.filter_by(key=key).first()
+        
+        # Convert value to string for storage
+        if value_type == 'json':
+            import json
+            value_str = json.dumps(value)
+        else:
+            value_str = str(value)
+        
+        if setting:
+            setting.value = value_str
+            setting.value_type = value_type
+            setting.updated_at = datetime.utcnow()
+            if current_user.is_authenticated:
+                setting.updated_by = current_user.id
+        else:
+            setting = AppSettings(
+                key=key,
+                value=value_str,
+                value_type=value_type,
+                category=category,
+                description=description,
+                updated_by=current_user.id if current_user.is_authenticated else None
+            )
+            db.session.add(setting)
+        
+        db.session.commit()
+        return setting
+
+
 class AuditLog(db.Model):
     """Audit log for compliance and security"""
     __tablename__ = 'audit_logs'
@@ -490,7 +556,7 @@ def admin_panel():
     """Admin panel - requires admin role"""
     if current_user.role != 'admin':
         return jsonify({'error': 'Admin access required'}), 403
-    return send_file('templates/admin.html')
+    return send_file('templates/admin-enhanced.html')
 
 
 @app.route('/analyzer')
@@ -919,6 +985,7 @@ def user_profile():
     if request.method == 'GET':
         return jsonify(current_user.to_dict())
     
+    # PUT - update profile
     data = request.get_json()
     
     if 'full_name' in data:
@@ -927,6 +994,9 @@ def user_profile():
         current_user.organization = data['organization']
     
     db.session.commit()
+    
+    # Log audit
+    AuditLog.log('profile_updated', 'user', str(current_user.id))
     
     return jsonify(current_user.to_dict())
 
@@ -1041,33 +1111,9 @@ def dashboard_stats():
     })
 
 
-@app.route('/api/analyses', methods=['GET'])
-@login_required
-def list_analyses():
-    """List user's analyses with pagination"""
-    limit = request.args.get('limit', 10, type=int)
-    offset = request.args.get('offset', 0, type=int)
-    status_filter = request.args.get('status')
-    
-    query = Analysis.query.filter_by(user_id=current_user.id)
-    
-    if status_filter:
-        query = query.filter_by(status=status_filter)
-    
-    total = query.count()
-    analyses = query.order_by(Analysis.created_at.desc()).limit(limit).offset(offset).all()
-    
-    return jsonify({
-        'total': total,
-        'limit': limit,
-        'offset': offset,
-        'analyses': [a.to_dict() for a in analyses]
-    })
-
-
 @app.route('/api/analysis/<analysis_id>', methods=['GET'])
 @login_required
-def get_analysis(analysis_id):
+def get_analysis_details(analysis_id):
     """Get specific analysis details"""
     analysis = Analysis.query.filter_by(id=analysis_id, user_id=current_user.id).first()
     
@@ -1103,32 +1149,6 @@ def upgrade_subscription():
         'message': 'Subscription upgraded successfully',
         'new_tier': new_tier,
         'tier_limits': current_user.get_tier_limits()
-    })
-
-
-@app.route('/api/user/profile', methods=['GET', 'PUT'])
-@login_required
-def user_profile():
-    """Get or update user profile"""
-    if request.method == 'GET':
-        return jsonify(current_user.to_dict())
-    
-    # PUT - update profile
-    data = request.get_json()
-    
-    if 'full_name' in data:
-        current_user.full_name = data['full_name']
-    if 'organization' in data:
-        current_user.organization = data['organization']
-    
-    db.session.commit()
-    
-    # Log audit
-    AuditLog.log('profile_updated', 'user', str(current_user.id))
-    
-    return jsonify({
-        'message': 'Profile updated successfully',
-        'user': current_user.to_dict()
     })
 
 
@@ -1527,20 +1547,267 @@ def admin_system_info():
 
 with app.app_context():
     db.create_all()
+    app.logger.info('Database tables initialized')
     
-    # Create default admin user if doesn't exist
-    if not User.query.filter_by(email='admin@barberx.info').first():
-        admin = User(
-            email='admin@barberx.info',
-            full_name='BarberX Administrator',
-            role='admin',
-            subscription_tier='enterprise',
-            is_verified=True
-        )
-        admin.set_password('admin123')  # Change this!
-        db.session.add(admin)
+    # Admin user already created via create_admin.py
+    # Use admin@barberx.info with the 33-char password from that script
+
+
+# ========================================
+# ADMIN SETTINGS MANAGEMENT
+# ========================================
+
+@app.route('/admin/settings', methods=['GET'])
+@login_required
+def admin_get_settings():
+    """Admin: Get all app settings"""
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    # Get all settings grouped by category
+    settings = AppSettings.query.order_by(AppSettings.category, AppSettings.key).all()
+    
+    settings_by_category = {}
+    for setting in settings:
+        if setting.category not in settings_by_category:
+            settings_by_category[setting.category] = []
+        
+        settings_by_category[setting.category].append({
+            'id': setting.id,
+            'key': setting.key,
+            'value': setting.value,
+            'value_type': setting.value_type,
+            'description': setting.description,
+            'is_editable': setting.is_editable,
+            'updated_at': setting.updated_at.isoformat() if setting.updated_at else None
+        })
+    
+    return jsonify({
+        'settings': settings_by_category,
+        'total': len(settings)
+    })
+
+
+@app.route('/admin/settings/<int:setting_id>', methods=['PUT'])
+@login_required
+def admin_update_setting(setting_id):
+    """Admin: Update a setting"""
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    setting = AppSettings.query.get_or_404(setting_id)
+    
+    if not setting.is_editable:
+        return jsonify({'error': 'This setting is not editable'}), 400
+    
+    data = request.get_json()
+    
+    if 'value' in data:
+        setting.value = str(data['value'])
+        setting.updated_at = datetime.utcnow()
+        setting.updated_by = current_user.id
+        
         db.session.commit()
-        app.logger.info('Default admin user created')
+        
+        AuditLog.log('setting_update', 'AppSettings', str(setting_id), {
+            'key': setting.key,
+            'new_value': data['value']
+        })
+        
+        return jsonify({
+            'message': 'Setting updated successfully',
+            'setting': {
+                'id': setting.id,
+                'key': setting.key,
+                'value': setting.value,
+                'updated_at': setting.updated_at.isoformat()
+            }
+        })
+    
+    return jsonify({'error': 'No value provided'}), 400
+
+
+@app.route('/admin/settings', methods=['POST'])
+@login_required
+def admin_create_setting():
+    """Admin: Create a new setting"""
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    data = request.get_json()
+    
+    required_fields = ['key', 'value', 'category']
+    if not all(field in data for field in required_fields):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    # Check if key already exists
+    existing = AppSettings.query.filter_by(key=data['key']).first()
+    if existing:
+        return jsonify({'error': 'Setting key already exists'}), 400
+    
+    setting = AppSettings(
+        key=data['key'],
+        value=str(data['value']),
+        value_type=data.get('value_type', 'string'),
+        category=data['category'],
+        description=data.get('description', ''),
+        is_editable=data.get('is_editable', True),
+        updated_by=current_user.id
+    )
+    
+    db.session.add(setting)
+    db.session.commit()
+    
+    AuditLog.log('setting_create', 'AppSettings', str(setting.id), {
+        'key': setting.key,
+        'value': data['value']
+    })
+    
+    return jsonify({
+        'message': 'Setting created successfully',
+        'setting': {
+            'id': setting.id,
+            'key': setting.key,
+            'value': setting.value,
+            'category': setting.category
+        }
+    }), 201
+
+
+@app.route('/admin/settings/<int:setting_id>', methods=['DELETE'])
+@login_required
+def admin_delete_setting(setting_id):
+    """Admin: Delete a setting"""
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    setting = AppSettings.query.get_or_404(setting_id)
+    
+    if not setting.is_editable:
+        return jsonify({'error': 'This setting cannot be deleted'}), 400
+    
+    key = setting.key
+    db.session.delete(setting)
+    db.session.commit()
+    
+    AuditLog.log('setting_delete', 'AppSettings', str(setting_id), {
+        'key': key
+    })
+    
+    return jsonify({'message': 'Setting deleted successfully'})
+
+
+@app.route('/admin/settings/initialize', methods=['POST'])
+@login_required
+def admin_initialize_settings():
+    """Admin: Initialize default settings"""
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    # Define default settings
+    default_settings = [
+        # General Settings
+        {'key': 'app_name', 'value': 'BarberX Legal Tech', 'value_type': 'string', 'category': 'general', 
+         'description': 'Application name displayed throughout the platform'},
+        {'key': 'app_tagline', 'value': 'Professional BWC Forensic Analysis', 'value_type': 'string', 'category': 'general',
+         'description': 'Tagline shown on homepage and login'},
+        {'key': 'maintenance_mode', 'value': 'false', 'value_type': 'bool', 'category': 'general',
+         'description': 'Enable to put site in maintenance mode'},
+        {'key': 'allow_registrations', 'value': 'true', 'value_type': 'bool', 'category': 'general',
+         'description': 'Allow new user registrations'},
+        {'key': 'contact_email', 'value': 'support@barberx.info', 'value_type': 'string', 'category': 'general',
+         'description': 'Contact email for support'},
+        
+        # Security Settings
+        {'key': 'session_timeout_minutes', 'value': '60', 'value_type': 'int', 'category': 'security',
+         'description': 'User session timeout in minutes'},
+        {'key': 'password_min_length', 'value': '8', 'value_type': 'int', 'category': 'security',
+         'description': 'Minimum password length'},
+        {'key': 'require_email_verification', 'value': 'true', 'value_type': 'bool', 'category': 'security',
+         'description': 'Require email verification for new accounts'},
+        {'key': 'max_login_attempts', 'value': '5', 'value_type': 'int', 'category': 'security',
+         'description': 'Max failed login attempts before lockout'},
+        {'key': 'enable_2fa', 'value': 'false', 'value_type': 'bool', 'category': 'security',
+         'description': 'Enable two-factor authentication'},
+        
+        # Feature Flags
+        {'key': 'enable_api', 'value': 'true', 'value_type': 'bool', 'category': 'features',
+         'description': 'Enable API access for Pro/Enterprise users'},
+        {'key': 'enable_analytics', 'value': 'true', 'value_type': 'bool', 'category': 'features',
+         'description': 'Enable analytics dashboard'},
+        {'key': 'enable_export', 'value': 'true', 'value_type': 'bool', 'category': 'features',
+         'description': 'Enable data export functionality'},
+        {'key': 'enable_webhooks', 'value': 'false', 'value_type': 'bool', 'category': 'features',
+         'description': 'Enable webhook notifications'},
+        
+        # Tier Limits
+        {'key': 'free_tier_analyses', 'value': '5', 'value_type': 'int', 'category': 'limits',
+         'description': 'Max analyses per month for free tier'},
+        {'key': 'free_tier_storage_mb', 'value': '500', 'value_type': 'int', 'category': 'limits',
+         'description': 'Max storage in MB for free tier'},
+        {'key': 'pro_tier_analyses', 'value': '100', 'value_type': 'int', 'category': 'limits',
+         'description': 'Max analyses per month for professional tier'},
+        {'key': 'pro_tier_storage_mb', 'value': '2048', 'value_type': 'int', 'category': 'limits',
+         'description': 'Max storage in MB for professional tier'},
+        {'key': 'max_file_size_mb', 'value': '500', 'value_type': 'int', 'category': 'limits',
+         'description': 'Maximum file upload size in MB'},
+        
+        # Email Settings
+        {'key': 'smtp_enabled', 'value': 'false', 'value_type': 'bool', 'category': 'email',
+         'description': 'Enable SMTP email sending'},
+        {'key': 'smtp_host', 'value': '', 'value_type': 'string', 'category': 'email',
+         'description': 'SMTP server hostname'},
+        {'key': 'smtp_port', 'value': '587', 'value_type': 'int', 'category': 'email',
+         'description': 'SMTP server port'},
+        {'key': 'smtp_username', 'value': '', 'value_type': 'string', 'category': 'email',
+         'description': 'SMTP username'},
+        {'key': 'from_email', 'value': 'noreply@barberx.info', 'value_type': 'string', 'category': 'email',
+         'description': 'From email address'},
+        
+        # Branding
+        {'key': 'primary_color', 'value': '#3b82f6', 'value_type': 'string', 'category': 'branding',
+         'description': 'Primary brand color (hex)'},
+        {'key': 'secondary_color', 'value': '#8b5cf6', 'value_type': 'string', 'category': 'branding',
+         'description': 'Secondary brand color (hex)'},
+        {'key': 'logo_url', 'value': '/assets/images/logo.png', 'value_type': 'string', 'category': 'branding',
+         'description': 'URL to application logo'},
+        {'key': 'favicon_url', 'value': '/assets/images/favicon.ico', 'value_type': 'string', 'category': 'branding',
+         'description': 'URL to favicon'},
+    ]
+    
+    created = 0
+    skipped = 0
+    
+    for setting_data in default_settings:
+        existing = AppSettings.query.filter_by(key=setting_data['key']).first()
+        if not existing:
+            setting = AppSettings(
+                key=setting_data['key'],
+                value=setting_data['value'],
+                value_type=setting_data['value_type'],
+                category=setting_data['category'],
+                description=setting_data['description'],
+                is_editable=True,
+                updated_by=current_user.id
+            )
+            db.session.add(setting)
+            created += 1
+        else:
+            skipped += 1
+    
+    db.session.commit()
+    
+    AuditLog.log('settings_initialize', 'AppSettings', None, {
+        'created': created,
+        'skipped': skipped
+    })
+    
+    return jsonify({
+        'message': 'Settings initialized successfully',
+        'created': created,
+        'skipped': skipped,
+        'total': created + skipped
+    })
 
 
 # ========================================
