@@ -1,0 +1,192 @@
+/* ============================================================================
+   1920's BARBER POLE - ANIMATED WITH GOLD ORNAMENTS
+   Classic spinning barber pole with Art Deco gold finials
+   ============================================================================ */
+
+.barber-pole-container {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
+}
+
+.barber-pole {
+  position: relative;
+  width: 60px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Gold Ornamental Finials */
+.pole-ornament {
+  width: 80px;
+  height: 40px;
+  background: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #B8941C 100%);
+  position: relative;
+  z-index: 2;
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.pole-ornament.top {
+  border-radius: 40px 40px 8px 8px;
+  margin-bottom: -8px;
+}
+
+.pole-ornament.top::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #FFD700, #D4AF37);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.8),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.pole-ornament.bottom {
+  border-radius: 8px 8px 40px 40px;
+  margin-top: -8px;
+}
+
+.pole-ornament.bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #D4AF37;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Pole Cylinder */
+.pole-cylinder {
+  width: 60px;
+  height: 220px;
+  position: relative;
+  background: linear-gradient(90deg, 
+    #e8e8e8 0%, 
+    #ffffff 50%, 
+    #e8e8e8 100%
+  );
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 
+    inset -4px 0 8px rgba(0, 0, 0, 0.15),
+    inset 4px 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Animated Stripes */
+.pole-stripes {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 400%;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 20px,
+    #dc2626 20px,
+    #dc2626 40px,
+    transparent 40px,
+    transparent 60px,
+    #2563eb 60px,
+    #2563eb 80px
+  );
+  animation: barberPoleRotate 3s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes barberPoleRotate {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(25%);
+  }
+}
+
+/* Gloss Effect */
+.pole-cylinder::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Golden Glow Effect */
+.barber-pole-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 105%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(212, 175, 55, 0.15) 0%,
+    transparent 70%
+  );
+  z-index: -1;
+  animation: goldenPulse 3s ease-in-out infinite;
+}
+
+@keyframes goldenPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .barber-pole-container {
+    right: 1rem;
+    transform: translateY(-50%) scale(0.8);
+  }
+}
+
+@media (max-width: 480px) {
+  .barber-pole-container {
+    display: none;
+  }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .pole-stripes {
+    animation: none;
+  }
+  
+  .barber-pole-container::before {
+    animation: none;
+    opacity: 0.6;
+  }
+}
