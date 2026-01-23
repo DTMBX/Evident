@@ -1607,8 +1607,6 @@ h6 {
   font-size: 0.95rem;
 }
 
-  box-shadow: 0 0 0 4px rgb(196 30 58 / 20%);
-
 .timeline-content h4 {
   font-family: Inter, sans-serif;
   font-size: 1rem;
@@ -1669,33 +1667,10 @@ h6 {
   color: #dc2626;
 }
 
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
 .sidebar-card ul {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.sidebar-card li {
-  font-size: 0.9rem;
-  color: var(--muted);
-  padding-left: 1.25rem;
-  position: relative;
-}
-
-.sidebar-card li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: #28c840;
-  font-size: 0.75rem;
-}
-
-.sidebar-card .not-list li::before {
-  content: "✕";
-  color: var(--accent);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1803,11 +1778,6 @@ h6 {
   color: #9ca3af;
 }
 
-.form-header p {
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -1847,16 +1817,6 @@ h6 {
 
 .connect-form input::placeholder {
   color: #6b7280;
-}
-
-.connect-form input:focus,
-.connect-form select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgb(196 30 58 / 10%);
-}
-
-.connect-form input::placeholder {
-  color: var(--muted);
 }
 
 .form-notice {
@@ -2314,165 +2274,4 @@ h6 {
 .md-meta {
   font-size: 0.9rem;
   color: var(--muted);
-}
-
-/* ==========================================================================
-   HEADER OVERRIDES (single, consistent system)
-   NOTE: This block intentionally overrides earlier .site-header styles.
-   We keep sticky + transparent until scroll (modern “glass” header).
-   ========================================================================== */
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-}
-
-/* Use an <img class="brand-logo" ...> in header.html */
-.brand-logo {
-  display: block;
-  height: 34px;
-  width: auto;
-  max-width: 240px;
-  object-fit: contain;
-
-  /* makes SVG feel “natural” over translucent headers */
-  filter: drop-shadow(0 8px 18px rgb(0 0 0 / 18%));
-}
-
-@media (width <= 480px) {
-  .brand-logo {
-    height: 30px;
-  }
-}
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  transform: translateY(0);
-  transition:
-    transform 220ms ease,
-    background-color 220ms ease,
-    box-shadow 220ms ease,
-    backdrop-filter 220ms ease;
-
-  /* default: transparent so hero shines through */
-  background: rgb(10 10 15 / 0%);
-  box-shadow: none;
-  border-bottom: 1px solid rgb(255 255 255 / 0%);
-}
-
-.site-header.is-scrolled {
-  background: rgb(10 10 15 / 70%);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgb(0 0 0 / 22%);
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
-}
-
-.site-header.is-hidden {
-  transform: translateY(-100%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-header {
-    transition: none;
-  }
-}
-
-/* Ensure nav items stay readable on dark scrolled header */
-.site-header.is-scrolled .main-nav a {
-  color: rgb(255 255 255 / 75%);
-}
-
-.site-header.is-scrolled .main-nav a:hover {
-  color: #fff;
-}
-
-.site-header.is-scrolled .nav-toggle span {
-  background: rgb(255 255 255 / 85%);
-}
-
-/* ==========================================================================
-   HEADER — CANONICAL OVERRIDES (keep this at end of file)
-   ========================================================================== */
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  transform: translateY(0);
-  transition:
-    transform 220ms ease,
-    background-color 220ms ease,
-    box-shadow 220ms ease,
-    backdrop-filter 220ms ease;
-  background: rgb(250 250 250 / 0%);
-  box-shadow: none;
-  border-bottom: 1px solid rgb(0 0 0 / 6%);
-  backdrop-filter: none;
-  color: var(--ink);
-}
-
-.site-header.is-scrolled {
-  background: rgb(250 250 250 / 86%);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 12px 30px rgb(0 0 0 / 12%);
-}
-
-.site-header.is-hidden {
-  transform: translateY(-100%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-header {
-    transition: none;
-  }
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.brand-logo {
-  display: block;
-  height: 34px;
-  width: auto;
-  max-width: 240px;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 18px rgb(0 0 0 / 18%));
-}
-
-@media (width <= 480px) {
-  .brand-logo {
-    height: 30px;
-  }
-}
-
-/* If you have a .brand-text element anywhere, do NOT force it white */
-.brand-text {
-  color: inherit;
-  -webkit-text-fill-color: currentcolor;
-}
-
-/* Dark scheme */
-@media (prefers-color-scheme: dark) {
-  .site-header {
-    border-bottom-color: rgb(255 255 255 / 8%);
-    color: #fff;
-  }
-
-  .site-header.is-scrolled {
-    background: rgb(10 10 15 / 70%);
-    box-shadow: 0 12px 30px rgb(0 0 0 / 32%);
-  }
-
-  .brand-logo {
-    filter: drop-shadow(0 8px 18px rgb(0 0 0 / 28%));
-  }
 }

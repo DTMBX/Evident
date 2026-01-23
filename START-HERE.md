@@ -1,3 +1,46 @@
+# 🚀 START HERE - BarberX Development Guide
+
+## ✅ NEW: Custom AI Agents Installed!
+
+**7 specialized GitHub Copilot agents** are now available to accelerate development:
+
+```bash
+npm run setup:agents    # Verify installation
+```
+
+**Quick Start:**
+- Open GitHub Copilot Chat
+- Type `@` to see available agents
+- Example: `@legal-compliance Review this export function`
+
+**📖 Full Guide:** [COPILOT-AGENTS-GUIDE.md](COPILOT-AGENTS-GUIDE.md)  
+**⚡ Quick Ref:** [AGENTS-QUICK-REF.md](AGENTS-QUICK-REF.md)
+
+---
+
+## 📋 Development Workflows
+
+### New Feature Development
+1. `@database-architect` - Design schema
+2. `@flask-backend` - Implement API
+3. `@frontend-dev` - Create UI
+4. `@legal-compliance` - Review compliance
+5. `@security-devops` - Security audit
+6. `@documentation` - Write guide
+
+### Code Review
+1. `@legal-compliance` - Check copyright violations
+2. `@security-devops` - Find vulnerabilities
+3. `@frontend-dev` - Verify accessibility
+
+### Pre-Production Launch
+1. `@legal-compliance` - Audit all exports
+2. `@security-devops` - Configure SSL + scan
+3. `@database-architect` - Validate schema
+4. `@documentation` - Update deployment docs
+
+---
+
 # 🚀 DASHBOARD OPTIMIZATION - WHAT TO DO NEXT
 
 ## ✅ Status: COMPLETE - Ready for Deployment
