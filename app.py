@@ -2803,7 +2803,7 @@ if __name__ == '__main__':
     🌐 Web Application: http://localhost:{port}
     🔐 Admin Login: admin@barberx.info
     📊 Database: {db_type}
-    📁 Logs: ./logs/barberx.log
+    Logs: ./logs/barberx.log
     
     Features:
     ✅ Multi-user authentication
