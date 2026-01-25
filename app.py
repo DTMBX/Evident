@@ -65,10 +65,12 @@ if database_url:
     # Fix for Heroku/Render postgres URL
     if database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///barberx_FRESH.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+    print(f"[OK] Using PostgreSQL database for production")
 else:
     # Local development with SQLite
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///barberx_FRESH.db"
+    print(f"[OK] Using SQLite database for development")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 20 * 1024 * 1024 * 1024))  # 20GB max to support Enterprise tier

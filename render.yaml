@@ -15,9 +15,13 @@ services:
       - key: FLASK_ENV
         value: production
       - key: MAX_CONTENT_LENGTH
-        value: "5368709120"
+        value: "21474836480"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: barberx-db
+          property: connectionString
       - key: CORS_ORIGINS
-        sync: false
+        value: "https://barberx.info,https://www.barberx.info,https://barberx-legal-tech.onrender.com"
     healthCheckPath: /
     autoDeploy: true
 
