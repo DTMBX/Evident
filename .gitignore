@@ -32,8 +32,10 @@ logs/
 # IDE
 .vscode/
 .idea/
+.vs/
 *.swp
 *.swo
+*.user
 
 # OS
 .DS_Store
@@ -53,7 +55,50 @@ overnight-improvements/
 # Node
 node_modules/
 
+# Jekyll / Static Site Generation
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+
+# .NET / C# Test Projects
+**/bin/
+**/obj/
+*.dll
+*.pdb
+*.cache
+
+# Analysis output
+bwc_analysis/
+*.analysis
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup.*
+
+# Git artifacts
+.git-rewrite/
+
+# Lighthouse reports
+lighthouse-*.html
+
 # Environment files
 .env.render
 .env.local
 .env
+.env.example
+.env.*.template
+
+# Archive and temporary documentation
+archive/
+docs/archive/
+
+# Build artifacts
+lighthouse-*.html
+test_*.html
+
+# Numbered version folders
+[0-9]*
+[0-9]*.[0-9]*.[0-9]*

@@ -55,7 +55,7 @@
 | ------------ | -------- | ---------- | ----------- | --------- |
 | Free         | $0       | 2/mo       | 50 pages    | 1GB       |
 | Professional | $49      | 25/mo      | 1,000 pages | 50GB      |
-| Premium      | $149     | 100/mo     | 5,000 pages | 200GB     |
+| Premium      | $199     | 100/mo     | 5,000 pages | 200GB     |
 | Enterprise   | $499     | Unlimited  | Unlimited   | Unlimited |
 | Admin        | Internal | Unlimited  | Unlimited   | Unlimited |
 

@@ -55,7 +55,7 @@ Successfully created a professional tier-based authentication and authorization 
 - Multi-BWC sync (3 cameras)
 - Email support (48hr response)
 
-### 💎 **Premium Tier** ($149/month)
+### 💎 **Premium Tier** ($199/month)
 
 **Law Firms & Professional Investigators**
 

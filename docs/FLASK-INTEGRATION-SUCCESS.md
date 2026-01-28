@@ -42,7 +42,7 @@ Professional:
 Premium:
   Email: premium@example.com
   Password: password123
-  Tier: Premium ($149/mo)
+  Tier: Premium ($199/mo)
 ```
 
 ---
