@@ -2826,7 +2826,8 @@ def serve_assets(filename):
 # ========================================
 
 
-@app.route("/api/founding-member-signup", methods=["POST"])
+@app.route("/api/founding-member-signup", methods=["POST", "OPTIONS"])
+@csrf.exempt
 def founding_member_signup():
     """
     Handle Founding Member email capture
@@ -2839,6 +2840,10 @@ def founding_member_signup():
         - spots_remaining: int (out of 100)
         - message: str
     """
+    # Handle OPTIONS preflight
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+
     try:
         data = request.get_json()
 
