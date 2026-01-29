@@ -117,6 +117,9 @@ INVESTOR-LOG.md
 *financial*.xlsx
 *revenue*.csv
 *margins*.csv
+excel-sheets/
+*.xlsx
+*.xls
 
 # Environment variables (may contain API keys)
 .env
