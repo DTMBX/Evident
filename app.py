@@ -243,7 +243,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 # Initialize AI Pipeline Orchestrator with configuration
 try:
     from src.ai.pipeline import get_orchestrator
-    
+
     pipeline_config = {
         "storage_root": "./uploads/pdfs/originals",
         "manifest_root": "./manifest",
@@ -251,9 +251,9 @@ try:
         "ocr_threshold": 50,
         "enable_citation_tracking": True,
         "max_passage_length": 1500,
-        "retrieval_top_k": 10
+        "retrieval_top_k": 10,
     }
-    
+
     # Initialize the singleton orchestrator
     orchestrator = get_orchestrator(pipeline_config)
     print("[OK] AI Pipeline orchestrator initialized with citation tracking")
@@ -337,6 +337,7 @@ csrf.init_app(app)
 
 # Exempt Stripe webhook from CSRF (it uses signature verification instead)
 csrf.exempt("stripe_payments.webhook")
+csrf.exempt("stripe.stripe_webhook")
 
 # Exempt REST API endpoints from CSRF (they use JWT/session authentication)
 csrf.exempt("auth_api")
@@ -445,11 +446,22 @@ try:
 except ImportError as e:
     print(f"[WARN] Stripe payments not available: {e}")
 
+# Register Stripe subscription service (webhooks)
+try:
+    from stripe_subscription_service import stripe_bp
+
+    app.register_blueprint(stripe_bp)
+    csrf.exempt(stripe_bp)  # Exempt entire blueprint - uses Stripe signature verification
+    print("[OK] Stripe subscription service registered at /api/stripe/*")
+except ImportError as e:
+    print(f"[WARN] Stripe subscription service not available: {e}")
+
 # Register ChatGPT integration blueprint
 try:
     from api.chatgpt import chatgpt_bp
 
     app.register_blueprint(chatgpt_bp)
+    csrf.exempt(chatgpt_bp)  # API endpoints use token auth, not CSRF
     print("[OK] ChatGPT integration registered at /api/v1/chat/*, /api/v1/projects/*")
 except ImportError as e:
     print(f"[WARN] ChatGPT integration not available: {e}")
@@ -459,6 +471,7 @@ try:
     from api.document_optimizer import bp as doc_optimizer_bp
 
     app.register_blueprint(doc_optimizer_bp)
+    csrf.exempt(doc_optimizer_bp)  # API endpoints use token auth
     print("[OK] Document Optimizer registered at /api/document-optimizer/*")
 except ImportError as e:
     print(f"[WARN] Document Optimizer not available: {e}")
@@ -490,6 +503,26 @@ try:
     register_api_blueprints(app)
 except ImportError as e:
     print(f"[WARN] REST API blueprints not available: {e}")
+
+# Register API Usage Metering blueprint
+try:
+    from api.metering import metering_bp
+
+    app.register_blueprint(metering_bp)
+    csrf.exempt(metering_bp)
+    print("[OK] API Usage Metering registered at /api/v1/metering/*")
+except ImportError as e:
+    print(f"[WARN] API Usage Metering not available: {e}")
+
+# Register Legal Chatbot API blueprint
+try:
+    from api.legal_chatbot import legal_chatbot_bp
+
+    app.register_blueprint(legal_chatbot_bp)
+    csrf.exempt(legal_chatbot_bp)
+    print("[OK] Legal Chatbot API registered at /api/v1/chatbot/*")
+except ImportError as e:
+    print(f"[WARN] Legal Chatbot API not available: {e}")
 
 # Register UX helper filters and context processors
 if UX_HELPERS_AVAILABLE:
@@ -775,7 +808,9 @@ def enforce_site_controls():
             return render_template("maintenance.html"), 503
 
     if not settings.get("site.allow_signup") and (
-        path.startswith("/auth/signup") or path.startswith("/register") or path.startswith("/signup")
+        path.startswith("/auth/signup")
+        or path.startswith("/register")
+        or path.startswith("/signup")
     ):
         flash("Signups are temporarily disabled.", "warning")
         return redirect("/auth/login")
@@ -959,7 +994,7 @@ def validate_upload_file(file, allowed_extensions=None, max_size=None):
             tier = current_user.tier
             if tier == TierLevel.PREMIUM:
                 max_size = MAX_FILE_SIZE_PREMIUM
-            elif tier in [TierLevel.PRO, TierLevel.PROFESSIONAL]:
+            elif tier == TierLevel.PROFESSIONAL:
                 max_size = MAX_FILE_SIZE_PRO
             else:
                 max_size = MAX_FILE_SIZE_FREE
@@ -1034,6 +1069,766 @@ def preview_demo():
 def chat_interface():
     """Enhanced chat interface with memory and citations"""
     return render_template("chat/interface.html", user=current_user)
+
+
+@app.route("/workspace")
+@login_required
+def unified_workspace():
+    """Unified BarberX Workspace - All-in-one professional interface"""
+    return render_template("unified-workspace.html", user=current_user)
+
+
+# ========================================
+# UNIFIED WORKSPACE API ENDPOINTS
+# ========================================
+
+
+@app.route("/api/workspace/models", methods=["GET"])
+@login_required
+def get_available_models():
+    """Get list of available AI models"""
+    models = [
+        # OpenAI GPT-4o Series (Latest Flagship)
+        {
+            "id": "gpt-4o",
+            "name": "GPT-4o",
+            "provider": "openai",
+            "description": "Fastest flagship model, multimodal capabilities",
+            "context_window": 128000,
+            "tier_required": "PRO",
+        },
+        {
+            "id": "gpt-4o-mini",
+            "name": "GPT-4o Mini",
+            "provider": "openai",
+            "description": "Affordable and intelligent small model",
+            "context_window": 128000,
+            "tier_required": "FREE",
+        },
+        # OpenAI GPT-4 Series
+        {
+            "id": "gpt-4-turbo",
+            "name": "GPT-4 Turbo",
+            "provider": "openai",
+            "description": "Most capable GPT-4 model, best for complex analysis",
+            "context_window": 128000,
+            "tier_required": "PRO",
+        },
+        {
+            "id": "gpt-4",
+            "name": "GPT-4",
+            "provider": "openai",
+            "description": "Advanced reasoning and analysis",
+            "context_window": 8192,
+            "tier_required": "PRO",
+        },
+        {
+            "id": "gpt-4-32k",
+            "name": "GPT-4 32K",
+            "provider": "openai",
+            "description": "Extended context for large documents",
+            "context_window": 32768,
+            "tier_required": "PRO",
+        },
+        # OpenAI GPT-3.5 Series
+        {
+            "id": "gpt-3.5-turbo",
+            "name": "GPT-3.5 Turbo",
+            "provider": "openai",
+            "description": "Fast and efficient for most tasks",
+            "context_window": 16385,
+            "tier_required": "FREE",
+        },
+        {
+            "id": "gpt-3.5-turbo-16k",
+            "name": "GPT-3.5 Turbo 16K",
+            "provider": "openai",
+            "description": "Extended context GPT-3.5",
+            "context_window": 16385,
+            "tier_required": "FREE",
+        },
+        # OpenAI o1 Series (Advanced Reasoning)
+        {
+            "id": "o1-preview",
+            "name": "o1-preview",
+            "provider": "openai",
+            "description": "Advanced reasoning model for complex problems",
+            "context_window": 128000,
+            "tier_required": "ENTERPRISE",
+        },
+        {
+            "id": "o1-mini",
+            "name": "o1-mini",
+            "provider": "openai",
+            "description": "Faster reasoning for STEM tasks",
+            "context_window": 128000,
+            "tier_required": "PRO",
+        },
+        {
+            "id": "o3-mini",
+            "name": "o3-mini",
+            "provider": "openai",
+            "description": "Latest efficient reasoning model",
+            "context_window": 128000,
+            "tier_required": "PRO",
+        },
+        # Anthropic Claude 3.5 Series
+        {
+            "id": "claude-3-5-sonnet",
+            "name": "Claude 3.5 Sonnet",
+            "provider": "anthropic",
+            "description": "Most intelligent Claude model, excellent for legal analysis",
+            "context_window": 200000,
+            "tier_required": "PRO",
+        },
+        # Anthropic Claude 3 Series
+        {
+            "id": "claude-3-opus",
+            "name": "Claude 3 Opus",
+            "provider": "anthropic",
+            "description": "Powerful model for complex legal reasoning",
+            "context_window": 200000,
+            "tier_required": "ENTERPRISE",
+        },
+        {
+            "id": "claude-3-sonnet",
+            "name": "Claude 3 Sonnet",
+            "provider": "anthropic",
+            "description": "Balanced performance and speed",
+            "context_window": 200000,
+            "tier_required": "PRO",
+        },
+        {
+            "id": "claude-3-haiku",
+            "name": "Claude 3 Haiku",
+            "provider": "anthropic",
+            "description": "Fastest Claude model for quick analysis",
+            "context_window": 200000,
+            "tier_required": "FREE",
+        },
+        # GitHub Copilot Models
+        {
+            "id": "copilot-gpt-4",
+            "name": "GitHub Copilot GPT-4",
+            "provider": "github-copilot",
+            "description": "Copilot-optimized GPT-4 for code and legal analysis",
+            "context_window": 8192,
+            "tier_required": "PRO",
+        },
+        {
+            "id": "copilot-gpt-3.5-turbo",
+            "name": "GitHub Copilot GPT-3.5",
+            "provider": "github-copilot",
+            "description": "Fast Copilot model for quick insights",
+            "context_window": 16385,
+            "tier_required": "FREE",
+        },
+        # Google Gemini Series
+        {
+            "id": "gemini-pro",
+            "name": "Gemini Pro",
+            "provider": "google",
+            "description": "Google's advanced AI for complex reasoning",
+            "context_window": 32000,
+            "tier_required": "PRO",
+        },
+        {
+            "id": "gemini-pro-vision",
+            "name": "Gemini Pro Vision",
+            "provider": "google",
+            "description": "Multimodal model for image and text analysis",
+            "context_window": 32000,
+            "tier_required": "PRO",
+        },
+        # Microsoft Azure OpenAI
+        {
+            "id": "azure-gpt-4",
+            "name": "Azure GPT-4",
+            "provider": "azure-openai",
+            "description": "Enterprise-grade GPT-4 via Azure",
+            "context_window": 8192,
+            "tier_required": "ENTERPRISE",
+        },
+        {
+            "id": "azure-gpt-4-turbo",
+            "name": "Azure GPT-4 Turbo",
+            "provider": "azure-openai",
+            "description": "Enterprise GPT-4 Turbo with enhanced security",
+            "context_window": 128000,
+            "tier_required": "ENTERPRISE",
+        },
+    ]
+
+    # Filter by user tier
+    user_tier = current_user.tier.value if current_user.tier else "FREE"
+    tier_hierarchy = {"FREE": 0, "PRO": 1, "ENTERPRISE": 2}
+    user_tier_level = tier_hierarchy.get(user_tier, 0)
+
+    accessible_models = [
+        m for m in models if tier_hierarchy.get(m["tier_required"], 2) <= user_tier_level
+    ]
+
+    return jsonify({"models": accessible_models})
+
+
+@app.route("/api/workspace/tools", methods=["GET"])
+@login_required
+def get_available_tools():
+    """Get list of available workspace tools"""
+    tools = [
+        {
+            "id": "chat",
+            "name": "AI Chat",
+            "icon": "comments",
+            "description": "Intelligent legal assistant",
+            "tier_required": "FREE",
+        },
+        {
+            "id": "analyzer",
+            "name": "Evidence Analyzer",
+            "icon": "microscope",
+            "description": "BWC and document analysis",
+            "tier_required": "PRO",
+        },
+        {
+            "id": "timeline",
+            "name": "Timeline Builder",
+            "icon": "clock",
+            "description": "Event chronology tool",
+            "tier_required": "PRO",
+        },
+        {
+            "id": "discrepancy",
+            "name": "Discrepancy Detector",
+            "icon": "search",
+            "description": "Find inconsistencies",
+            "tier_required": "PRO",
+        },
+        {
+            "id": "transcript",
+            "name": "Transcript Analyzer",
+            "icon": "file-alt",
+            "description": "Transcription and analysis",
+            "tier_required": "PRO",
+        },
+        {
+            "id": "workflow",
+            "name": "Custom Workflows",
+            "icon": "project-diagram",
+            "description": "Automated legal workflows",
+            "tier_required": "ENTERPRISE",
+        },
+    ]
+
+    return jsonify({"tools": tools})
+
+
+@app.route("/api/workspace/analyze", methods=["POST"])
+@login_required
+@require_tier(TierLevel.PROFESSIONAL)
+def analyze_evidence():
+    """Unified evidence analysis endpoint"""
+    import time
+
+    from usage_meter import SmartMeter, UsageQuota
+
+    # Check quota BEFORE processing
+    quota = UsageQuota.query.filter_by(user_id=current_user.id).first()
+    if not quota:
+        quota = SmartMeter.initialize_user_quota(current_user.id)
+
+    has_quota, error_msg = quota.check_quota("analyses")
+    if not has_quota:
+        SmartMeter.track_event(
+            event_type="analysis_blocked",
+            event_category="quota",
+            status="denied",
+            error_message=error_msg,
+        )
+        return (
+            jsonify({"error": "Quota exceeded", "message": error_msg, "upgrade_url": "/pricing"}),
+            429,
+        )
+
+    data = request.get_json()
+    analysis_type = data.get("type", "general")
+    content = data.get("content", "")
+    model = data.get("model", "gpt-3.5-turbo")
+
+    if not content:
+        return jsonify({"error": "No content provided"}), 400
+
+    start_time = time.time()
+
+    try:
+        # Use existing ChatGPT service
+        from chatgpt_service import ChatGPTService
+
+        # Get user's API key or use system key
+        user_api_key = session.get("openai_api_key") or os.getenv("OPENAI_API_KEY")
+
+        if not user_api_key:
+            return (
+                jsonify(
+                    {
+                        "error": "No API key configured",
+                        "message": "Please add your OpenAI API key in settings",
+                    }
+                ),
+                400,
+            )
+
+        chatgpt = ChatGPTService(api_key=user_api_key)
+
+        # Build analysis prompt based on type
+        prompts = {
+            "general": "Analyze this legal evidence and provide key insights:",
+            "timeline": "Extract and organize all events in chronological order:",
+            "discrepancy": "Identify any inconsistencies, contradictions, or discrepancies:",
+            "summary": "Provide a concise summary of this evidence:",
+            "transcript": "Analyze this transcript for key statements and themes:",
+        }
+
+        system_prompt = prompts.get(analysis_type, prompts["general"])
+
+        messages = [
+            {
+                "role": "system",
+                "content": "You are an expert legal analyst specializing in evidence review and BWC analysis.",
+            },
+            {"role": "user", "content": f"{system_prompt}\n\n{content}"},
+        ]
+
+        response = chatgpt.create_chat_completion(
+            messages=messages, model=model, max_tokens=2000, temperature=0.3
+        )
+
+        duration = time.time() - start_time
+        tokens_used = response.get("tokens_used", 0)
+
+        # Estimate cost (approximate rates)
+        cost_per_1k = 0.002 if "gpt-4" in model else 0.0005
+        estimated_cost = (tokens_used / 1000) * cost_per_1k
+
+        if response.get("success"):
+            # Track successful analysis
+            SmartMeter.track_event(
+                event_type="analysis",
+                event_category="compute",
+                resource_name=model,
+                tokens_input=len(content.split()),
+                tokens_output=tokens_used,
+                duration_seconds=duration,
+                cost_usd=estimated_cost,
+                status="success",
+            )
+
+            # Increment quota
+            quota.increment_quota("analyses")
+            quota.increment_quota("ai_tokens", tokens_used)
+            quota.total_cost_usd += estimated_cost
+            db.session.commit()
+
+            return jsonify(
+                {
+                    "analysis": response["content"],
+                    "model": response.get("model"),
+                    "tokens_used": response.get("tokens_used"),
+                }
+            )
+        else:
+            # Track failed analysis
+            SmartMeter.track_event(
+                event_type="analysis",
+                event_category="compute",
+                resource_name=model,
+                duration_seconds=duration,
+                status="error",
+                error_message=response.get("error"),
+            )
+            return jsonify({"error": response.get("error")}), 500
+
+    except Exception as e:
+        app.logger.error(f"Analysis error: {e}")
+        # Track error
+        SmartMeter.track_event(
+            event_type="analysis",
+            event_category="compute",
+            resource_name=model,
+            status="error",
+            error_message=str(e),
+        )
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/workspace/workflows", methods=["GET"])
+@login_required
+def get_workflows():
+    """Get available custom workflows"""
+    workflows = [
+        {
+            "id": "brady-analysis",
+            "name": "Brady Violation Analysis",
+            "description": "Systematic analysis for exculpatory evidence",
+            "steps": [
+                "Extract all evidence items",
+                "Identify potentially exculpatory material",
+                "Check disclosure timeline",
+                "Generate Brady checklist",
+            ],
+            "tier_required": "PRO",
+        },
+        {
+            "id": "bwc-forensic",
+            "name": "BWC Forensic Workflow",
+            "description": "Complete body camera analysis pipeline",
+            "steps": [
+                "Metadata extraction",
+                "Video transcript generation",
+                "Scene analysis",
+                "Officer statement comparison",
+                "Timeline reconstruction",
+            ],
+            "tier_required": "PRO",
+        },
+        {
+            "id": "discovery-review",
+            "name": "Discovery Document Review",
+            "description": "Automated document classification and analysis",
+            "steps": [
+                "Document classification",
+                "Entity extraction",
+                "Key fact identification",
+                "Privilege review",
+                "Summary generation",
+            ],
+            "tier_required": "ENTERPRISE",
+        },
+    ]
+
+    return jsonify({"workflows": workflows})
+
+
+@app.route("/api/workspace/execute-workflow", methods=["POST"])
+@login_required
+@require_tier(TierLevel.PROFESSIONAL)
+def execute_workflow():
+    """Execute a custom workflow"""
+    data = request.get_json()
+    workflow_id = data.get("workflow_id")
+    input_data = data.get("input")
+
+    if not workflow_id or not input_data:
+        return jsonify({"error": "Missing workflow_id or input"}), 400
+
+    # Workflow execution logic here
+    # This would integrate with various analysis services
+
+    return jsonify(
+        {
+            "status": "processing",
+            "workflow_id": workflow_id,
+            "message": "Workflow execution started",
+            "estimated_time": "2-5 minutes",
+        }
+    )
+
+
+# ========================================
+# SMART METER USAGE TRACKING API
+# ========================================
+
+
+@app.route("/api/usage/stats", methods=["GET"])
+@login_required
+def get_usage_stats():
+    """Get comprehensive usage statistics for current user"""
+    from usage_meter import SmartMeter
+
+    days = request.args.get("days", 30, type=int)
+    stats = SmartMeter.get_user_stats(current_user.id, days=days)
+
+    return jsonify(stats)
+
+
+@app.route("/api/usage/quota", methods=["GET"])
+@login_required
+def get_usage_quota():
+    """Get real-time quota status for current user"""
+    from usage_meter import SmartMeter, UsageQuota
+
+    quota = UsageQuota.query.filter_by(user_id=current_user.id).first()
+    if not quota:
+        quota = SmartMeter.initialize_user_quota(current_user.id)
+
+    quota.reset_if_new_period()
+
+    return jsonify(
+        {
+            "period": {
+                "start": quota.period_start.isoformat(),
+                "end": quota.period_end.isoformat(),
+                "days_remaining": (quota.period_end - datetime.utcnow()).days,
+            },
+            "quotas": {
+                "ai_tokens": {
+                    "used": quota.ai_tokens_used,
+                    "limit": quota.ai_tokens_limit,
+                    "percent": quota.get_usage_percent("ai_tokens"),
+                    "remaining": (
+                        max(0, quota.ai_tokens_limit - quota.ai_tokens_used)
+                        if quota.ai_tokens_limit != -1
+                        else -1
+                    ),
+                },
+                "ai_requests": {
+                    "used": quota.ai_requests_count,
+                    "limit": quota.ai_requests_limit,
+                    "percent": quota.get_usage_percent("ai_requests"),
+                    "remaining": (
+                        max(0, quota.ai_requests_limit - quota.ai_requests_count)
+                        if quota.ai_requests_limit != -1
+                        else -1
+                    ),
+                },
+                "storage": {
+                    "used": quota.storage_bytes_used,
+                    "limit": quota.storage_bytes_limit,
+                    "percent": quota.get_usage_percent("storage"),
+                    "remaining": (
+                        max(0, quota.storage_bytes_limit - quota.storage_bytes_used)
+                        if quota.storage_bytes_limit != -1
+                        else -1
+                    ),
+                    "used_mb": round(quota.storage_bytes_used / 1048576, 2),
+                    "limit_mb": (
+                        round(quota.storage_bytes_limit / 1048576, 2)
+                        if quota.storage_bytes_limit != -1
+                        else -1
+                    ),
+                },
+                "files": {
+                    "used": quota.files_uploaded_count,
+                    "limit": quota.files_uploaded_limit,
+                    "percent": quota.get_usage_percent("files"),
+                    "remaining": (
+                        max(0, quota.files_uploaded_limit - quota.files_uploaded_count)
+                        if quota.files_uploaded_limit != -1
+                        else -1
+                    ),
+                },
+                "analyses": {
+                    "used": quota.analyses_count,
+                    "limit": quota.analyses_limit,
+                    "percent": quota.get_usage_percent("analyses"),
+                    "remaining": (
+                        max(0, quota.analyses_limit - quota.analyses_count)
+                        if quota.analyses_limit != -1
+                        else -1
+                    ),
+                },
+                "workflows": {
+                    "used": quota.workflows_executed_count,
+                    "limit": quota.workflows_executed_limit,
+                    "percent": quota.get_usage_percent("workflows"),
+                    "remaining": (
+                        max(0, quota.workflows_executed_limit - quota.workflows_executed_count)
+                        if quota.workflows_executed_limit != -1
+                        else -1
+                    ),
+                },
+                "api_calls": {
+                    "used": quota.api_calls_count,
+                    "limit": quota.api_calls_limit,
+                    "percent": quota.get_usage_percent("api_calls"),
+                    "remaining": (
+                        max(0, quota.api_calls_limit - quota.api_calls_count)
+                        if quota.api_calls_limit != -1
+                        else -1
+                    ),
+                },
+                "cost": {
+                    "used_usd": float(quota.total_cost_usd),
+                    "limit_usd": float(quota.cost_limit_usd),
+                    "percent": (
+                        min(
+                            100.0, (float(quota.total_cost_usd) / float(quota.cost_limit_usd)) * 100
+                        )
+                        if quota.cost_limit_usd > 0
+                        else 0
+                    ),
+                    "remaining_usd": (
+                        max(0, float(quota.cost_limit_usd) - float(quota.total_cost_usd))
+                        if quota.cost_limit_usd != -1
+                        else -1
+                    ),
+                },
+            },
+            "alerts": {
+                "alert_80_percent": quota.alert_80_percent_sent,
+                "alert_95_percent": quota.alert_95_percent_sent,
+                "alert_100_percent": quota.alert_100_percent_sent,
+            },
+        }
+    )
+
+
+@app.route("/api/usage/events", methods=["GET"])
+@login_required
+def get_usage_events():
+    """Get recent usage events for current user"""
+    from usage_meter import SmartMeterEvent
+
+    limit = request.args.get("limit", 100, type=int)
+    event_type = request.args.get("type")
+    days = request.args.get("days", 7, type=int)
+
+    since = datetime.utcnow() - timedelta(days=days)
+
+    query = SmartMeterEvent.query.filter(
+        SmartMeterEvent.user_id == current_user.id, SmartMeterEvent.timestamp >= since
+    )
+
+    if event_type:
+        query = query.filter(SmartMeterEvent.event_type == event_type)
+
+    events = query.order_by(SmartMeterEvent.timestamp.desc()).limit(limit).all()
+
+    return jsonify(
+        {
+            "events": [
+                {
+                    "id": e.id,
+                    "event_type": e.event_type,
+                    "event_category": e.event_category,
+                    "resource_name": e.resource_name,
+                    "quantity": e.quantity,
+                    "tokens_input": e.tokens_input,
+                    "tokens_output": e.tokens_output,
+                    "duration_seconds": e.duration_seconds,
+                    "file_size_bytes": e.file_size_bytes,
+                    "cost_usd": float(e.cost_usd) if e.cost_usd else 0,
+                    "status": e.status,
+                    "endpoint": e.endpoint,
+                    "timestamp": e.timestamp.isoformat(),
+                }
+                for e in events
+            ],
+            "total": len(events),
+        }
+    )
+
+
+@app.route("/api/usage/summary", methods=["GET"])
+@login_required
+def get_usage_summary():
+    """Get usage summary with charts data"""
+    from sqlalchemy import func
+
+    from usage_meter import SmartMeter, SmartMeterEvent
+
+    days = request.args.get("days", 30, type=int)
+    since = datetime.utcnow() - timedelta(days=days)
+
+    # Get daily breakdown
+    daily_stats = (
+        db.session.query(
+            func.date(SmartMeterEvent.timestamp).label("date"),
+            func.count(SmartMeterEvent.id).label("count"),
+            func.sum(SmartMeterEvent.tokens_input + SmartMeterEvent.tokens_output).label("tokens"),
+            func.sum(SmartMeterEvent.cost_usd).label("cost"),
+        )
+        .filter(SmartMeterEvent.user_id == current_user.id, SmartMeterEvent.timestamp >= since)
+        .group_by(func.date(SmartMeterEvent.timestamp))
+        .order_by("date")
+        .all()
+    )
+
+    # Get by event type
+    by_type = (
+        db.session.query(
+            SmartMeterEvent.event_type,
+            func.count(SmartMeterEvent.id).label("count"),
+            func.sum(SmartMeterEvent.cost_usd).label("cost"),
+        )
+        .filter(SmartMeterEvent.user_id == current_user.id, SmartMeterEvent.timestamp >= since)
+        .group_by(SmartMeterEvent.event_type)
+        .all()
+    )
+
+    # Get comprehensive stats
+    stats = SmartMeter.get_user_stats(current_user.id, days=days)
+
+    return jsonify(
+        {
+            "daily": [
+                {
+                    "date": str(row.date),
+                    "events": row.count,
+                    "tokens": int(row.tokens or 0),
+                    "cost_usd": float(row.cost or 0),
+                }
+                for row in daily_stats
+            ],
+            "by_type": [
+                {
+                    "type": row.event_type,
+                    "count": row.count,
+                    "cost_usd": float(row.cost or 0),
+                }
+                for row in by_type
+            ],
+            "stats": stats,
+        }
+    )
+
+
+@app.route("/api/usage/track", methods=["POST"])
+@login_required
+def track_usage_event():
+    """Manually track a usage event (for client-side tracking)"""
+    from usage_meter import SmartMeter, UsageQuota
+
+    data = request.get_json()
+
+    # Check rate limit
+    quota = UsageQuota.query.filter_by(user_id=current_user.id).first()
+    if not quota:
+        quota = SmartMeter.initialize_user_quota(current_user.id)
+
+    if not quota.check_rate_limit():
+        return (
+            jsonify(
+                {
+                    "error": "Rate limit exceeded",
+                    "message": "Too many requests. Please slow down.",
+                    "retry_after": 60,
+                }
+            ),
+            429,
+        )
+
+    # Update rate limit counter
+    quota.requests_this_minute += 1
+    quota.last_request_timestamp = datetime.utcnow()
+    db.session.commit()
+
+    event = SmartMeter.track_event(
+        event_type=data.get("event_type", "unknown"),
+        event_category=data.get("event_category", "feature"),
+        user_id=current_user.id,
+        resource_name=data.get("resource_name"),
+        quantity=data.get("quantity", 1.0),
+        duration_seconds=data.get("duration_seconds", 0.0),
+        status=data.get("status", "success"),
+    )
+
+    return jsonify(
+        {
+            "success": True,
+            "event_id": event.id if event else None,
+        }
+    )
 
 
 # ========================================
@@ -1286,27 +2081,27 @@ def dashboard():
         usage = UsageTracking.get_or_create_current(current_user.id)
         limits = current_user.get_tier_limits()
 
-        return render_template(
-            "auth/dashboard.html", user=current_user, usage=usage, limits=limits
-        )
+        return render_template("auth/dashboard.html", user=current_user, usage=usage, limits=limits)
     except Exception as e:
         app.logger.error(f"Dashboard error: {e}", exc_info=True)
         # Create minimal usage/limits on error
-        usage = type('obj', (object,), {
-            'bwc_videos_processed': 0,
-            'document_pages_processed': 0,
-            'transcription_minutes_used': 0,
-            'storage_used_mb': 0
-        })()
+        usage = type(
+            "obj",
+            (object,),
+            {
+                "bwc_videos_processed": 0,
+                "document_pages_processed": 0,
+                "transcription_minutes_used": 0,
+                "storage_used_mb": 0,
+            },
+        )()
         limits = {
-            'bwc_videos_per_month': 1,
-            'document_pages_per_month': 5,
-            'transcription_minutes_per_month': 10,
-            'storage_gb': 1
+            "bwc_videos_per_month": 1,
+            "document_pages_per_month": 5,
+            "transcription_minutes_per_month": 10,
+            "storage_gb": 1,
         }
-        return render_template(
-            "auth/dashboard.html", user=current_user, usage=usage, limits=limits
-        )
+        return render_template("auth/dashboard.html", user=current_user, usage=usage, limits=limits)
 
 
 @app.route("/account-settings")
@@ -1336,22 +2131,22 @@ def admin_founding_members():
         return redirect(url_for("dashboard"))
 
     import csv
-    
+
     signups_file = Path("founding_member_signups.csv")
     signups = []
-    
+
     if signups_file.exists():
         with open(signups_file, "r", newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             signups = list(reader)
-    
+
     spots_remaining = max(0, 100 - len(signups))
-    
+
     return render_template(
         "admin/founding-members.html",
         signups=signups,
         total_signups=len(signups),
-        spots_remaining=spots_remaining
+        spots_remaining=spots_remaining,
     )
 
 
@@ -1361,17 +2156,17 @@ def admin_export_founding_members():
     """Export founding member signups as CSV"""
     if not hasattr(current_user, "is_admin") or not current_user.is_admin:
         return jsonify({"error": "Admin access required"}), 403
-    
+
     signups_file = Path("founding_member_signups.csv")
-    
+
     if not signups_file.exists():
         return jsonify({"error": "No signups found"}), 404
-    
+
     return send_file(
         signups_file,
         mimetype="text/csv",
         as_attachment=True,
-        download_name=f"founding_members_{datetime.utcnow().strftime('%Y%m%d')}.csv"
+        download_name=f"founding_members_{datetime.utcnow().strftime('%Y%m%d')}.csv",
     )
 
 
@@ -1998,6 +2793,8 @@ def legal_analysis_dashboard():
 
 @app.route("/api/legal/scan-violations", methods=["POST"])
 @login_required
+@require_tier(TierLevel.PROFESSIONAL)
+@check_usage_limit("legal_analyses_per_month", increment=1)
 def scan_violations():
     """Scan transcript for legal violations"""
     if not LEGAL_TOOLS_AVAILABLE:
@@ -2031,6 +2828,8 @@ def scan_violations():
 
 @app.route("/api/legal/check-compliance", methods=["POST"])
 @login_required
+@require_tier(TierLevel.PROFESSIONAL)
+@check_usage_limit("legal_analyses_per_month", increment=1)
 def check_compliance():
     """Check evidence for statutory compliance"""
     if not LEGAL_TOOLS_AVAILABLE:
@@ -2063,6 +2862,8 @@ def check_compliance():
 
 @app.route("/api/legal/combined-analysis", methods=["POST"])
 @login_required
+@require_tier(TierLevel.PROFESSIONAL)
+@check_usage_limit("legal_analyses_per_month", increment=1)
 def combined_legal_analysis():
     """Run both violation scan and compliance check"""
     if not LEGAL_TOOLS_AVAILABLE:
@@ -2117,6 +2918,8 @@ def combined_legal_analysis():
 
 @app.route("/api/evidence/transcribe", methods=["POST"])
 @login_required
+@require_tier(TierLevel.STARTER)
+@check_usage_limit("transcription_minutes_per_month", increment=1)
 def transcribe_audio():
     """Transcribe audio/video using Whisper AI"""
     if not WHISPER_AVAILABLE:
@@ -2171,6 +2974,8 @@ def transcribe_audio():
 
 @app.route("/api/evidence/ocr", methods=["POST"])
 @login_required
+@require_tier(TierLevel.FREE)
+@check_usage_limit("document_pages_per_month", increment=1)
 def extract_text_ocr():
     """Extract text from images/scanned PDFs using OCR"""
     if not OCR_AVAILABLE:
@@ -2558,6 +3363,8 @@ def execute_agent(agent_id):
 
 @app.route("/api/evidence/analyze-pdf", methods=["POST"])
 @login_required
+@require_tier(TierLevel.STARTER)
+@check_usage_limit("pdf_documents_per_month", increment=1)
 def analyze_pdf_discovery():
     """Analyze PDF discovery document for legal information"""
     from enhanced_pdf_discovery_analyzer import PDFDiscoveryAnalyzer
@@ -2778,8 +3585,23 @@ def workflow_scan_document():
 @app.route("/tools")
 @login_required
 def tools_index():
-    """Tools hub"""
-    return render_template("tools/index.html")
+    """Tools hub - unified AI analysis tools interface"""
+    from models_auth import UsageTracking
+    
+    try:
+        usage = UsageTracking.get_or_create_current(current_user.id)
+        limits = current_user.get_tier_limits()
+        return render_template("tools-hub.html", user=current_user, usage=usage, limits=limits)
+    except Exception as e:
+        app.logger.error(f"Tools hub error: {e}")
+        # Fallback with minimal data
+        usage = type('obj', (object,), {
+            'bwc_videos_processed': 0,
+            'pdf_documents_processed': 0,
+            'transcription_minutes_used': 0,
+            'storage_used_mb': 0
+        })()
+        return render_template("tools-hub.html", user=current_user, usage=usage, limits={})
 
 
 @app.route("/tools/transcript")
@@ -2822,6 +3644,20 @@ def batch_processor():
 def api_console():
     """API console tool"""
     return render_template("tools/api-console.html")
+
+
+@app.route("/tools/ocr")
+@login_required
+def ocr_tool():
+    """OCR text extraction tool"""
+    return render_template("tools/ocr.html")
+
+
+@app.route("/tools/case-law")
+@login_required
+def case_law_tool():
+    """Case law research tool"""
+    return render_template("tools/case-law.html")
 
 
 @app.route("/batch-upload")
@@ -3178,6 +4014,30 @@ def upload_file():
 @check_usage_limit("pdf_documents_per_month", increment=1)
 def upload_pdf():
     """Handle single PDF file upload"""
+    import time
+
+    from usage_meter import SmartMeter, UsageQuota
+
+    # Check file quota
+    quota = UsageQuota.query.filter_by(user_id=current_user.id).first()
+    if not quota:
+        quota = SmartMeter.initialize_user_quota(current_user.id)
+
+    has_quota, error_msg = quota.check_quota("files")
+    if not has_quota:
+        SmartMeter.track_event(
+            event_type="upload_blocked",
+            event_category="quota",
+            status="denied",
+            error_message=error_msg,
+        )
+        return (
+            jsonify(
+                {"error": "Upload quota exceeded", "message": error_msg, "upgrade_url": "/pricing"}
+            ),
+            429,
+        )
+
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
 
@@ -3209,8 +4069,28 @@ def upload_pdf():
 
     filepath = upload_dir / unique_filename
 
+    start_time = time.time()
     # Save file
     file.save(filepath)
+
+    file_size = filepath.stat().st_size
+    duration = time.time() - start_time
+
+    # Track upload
+    SmartMeter.track_event(
+        event_type="file_upload",
+        event_category="storage",
+        resource_name=original_filename,
+        quantity=1,
+        file_size_bytes=file_size,
+        duration_seconds=duration,
+        status="success",
+    )
+
+    # Update storage quota
+    quota.increment_quota("files")
+    quota.increment_quota("storage", file_size)
+    db.session.commit()
 
     # Get file size
     file_size = os.path.getsize(filepath)
@@ -4629,7 +5509,9 @@ def admin_stats():
 
     # Estimated revenue (based on tier pricing)
     tier_pricing = {"FREE": 0, "PROFESSIONAL": 49, "PREMIUM": 99, "ENTERPRISE": 249}
-    estimated_revenue = sum(tier_pricing.get(tier, 0) * count for tier, count in tier_counts.items())
+    estimated_revenue = sum(
+        tier_pricing.get(tier, 0) * count for tier, count in tier_counts.items()
+    )
 
     return jsonify(
         {
@@ -4672,8 +5554,9 @@ def admin_operations_summary():
     if current_user.role != "admin":
         return jsonify({"error": "Admin access required"}), 403
 
-    import psutil
     from datetime import timedelta
+
+    import psutil
     from sqlalchemy import func
 
     def ensure_setting(key, default, value_type="string", category="operations", description=""):
@@ -5683,10 +6566,54 @@ def upload_video():
 @app.route("/api/chat", methods=["POST"])
 @login_required
 def ai_chat():
+    import time
+
+    from usage_meter import SmartMeter, UsageQuota
+
+    # Check quota and rate limit
+    quota = UsageQuota.query.filter_by(user_id=current_user.id).first()
+    if not quota:
+        quota = SmartMeter.initialize_user_quota(current_user.id)
+
+    # Rate limit check
+    if not quota.check_rate_limit():
+        return (
+            jsonify(
+                {
+                    "error": "Rate limit exceeded",
+                    "message": "Too many requests. Please wait a moment.",
+                    "retry_after": 60,
+                }
+            ),
+            429,
+        )
+
+    # AI request quota check
+    has_quota, error_msg = quota.check_quota("ai_requests")
+    if not has_quota:
+        SmartMeter.track_event(
+            event_type="chat_blocked",
+            event_category="quota",
+            status="denied",
+            error_message=error_msg,
+        )
+        return (
+            jsonify(
+                {"error": "AI quota exceeded", "message": error_msg, "upgrade_url": "/pricing"}
+            ),
+            429,
+        )
+
+    quota.requests_this_minute += 1
+    quota.last_request_timestamp = datetime.utcnow()
+    db.session.commit()
+
     data = request.get_json()
     question = data.get("question", "").strip()
     context = data.get("context", "")
     user_api_key = data.get("api_key", "").strip()
+    model = data.get("model", "gpt-4")
+
     if not question:
         return jsonify({"error": "No question provided"}), 400
 
@@ -5695,11 +6622,14 @@ def ai_chat():
     if not api_key:
         return jsonify({"answer": "[No OpenAI API key provided. Please enter your key.]"}), 400
 
+    start_time = time.time()
+    tokens_used = 0
+
     try:
         openai.api_key = api_key
         prompt = f"You are a legal tech assistant. Context: {context}. User question: {question}"
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model=model,
             messages=[
                 {
                     "role": "system",
@@ -5711,10 +6641,47 @@ def ai_chat():
             temperature=0.2,
         )
         answer = response.choices[0].message["content"].strip()
+        tokens_used = response.get("usage", {}).get("total_tokens", 0)
+
+        duration = time.time() - start_time
+
+        # Estimate cost
+        cost_per_1k = 0.03 if "gpt-4" in model else 0.0015
+        estimated_cost = (tokens_used / 1000) * cost_per_1k
+
+        # Track successful chat
+        SmartMeter.track_event(
+            event_type="chat_message",
+            event_category="compute",
+            resource_name=model,
+            tokens_input=len(question.split()),
+            tokens_output=tokens_used,
+            duration_seconds=duration,
+            cost_usd=estimated_cost,
+            status="success",
+        )
+
+        # Update quotas
+        quota.increment_quota("ai_requests")
+        quota.increment_quota("ai_tokens", tokens_used)
+        quota.total_cost_usd += estimated_cost
+        db.session.commit()
+
     except Exception as e:
+        duration = time.time() - start_time
         answer = f"[AI unavailable: {e}]"
 
-    return jsonify({"answer": answer})
+        # Track error
+        SmartMeter.track_event(
+            event_type="chat_message",
+            event_category="compute",
+            resource_name=model,
+            duration_seconds=duration,
+            status="error",
+            error_message=str(e),
+        )
+
+    return jsonify({"answer": answer, "tokens_used": tokens_used})
 
 
 @app.route("/healthz")

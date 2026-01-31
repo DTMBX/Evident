@@ -108,7 +108,7 @@ lighthouse-*.html
 .secrets/
 
 # Embedded repositories (submodules)
-barber-cam/
+# barber-cam/ - Now tracked with git-crypt encryption
 
 # Archive and temporary documentation
 archive/
@@ -224,3 +224,80 @@ BarberX-Confidential/
 
 htmlcov/
 backups/*/htmlcov/
+
+# Secrets - NEVER COMMIT
+secrets.enc
+secrets.json
+*.secret
+*.keystore
+*.p12
+*.mobileprovision
+*.cer
+*.certSigningRequest
+
+# .NET Build Artifacts
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+.vs/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# .NET MAUI Specific
+**/Resources/Raw/AboutAssets.txt
+**/Properties/AssemblyInfo.cs
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# Test Results
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Azure
+*.pubxml
+*.publishproj
+PublishScripts/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Sensitive Configuration Files - ENCRYPTED ONLY
+appsettings.Production.json
+appsettings.Staging.json
+config.production.py
+config.staging.py
+
+# API Keys and Secrets - NEVER COMMIT UNENCRYPTED
+**/appsettings.*.json
+!**/appsettings.json
+!**/appsettings.Development.json
+openai_key.txt
+stripe_keys.txt
+jwt_secret.txt
+
+# Mobile App Signing
+android-keystore.jks
+ios-distribution.p12
+GoogleService-Info.plist
+google-services.json
+
+# Local Development
+launchSettings.json
+*.local.json
