@@ -30,3 +30,4 @@ See \docs/\ folder for complete documentation.
 ## License
 
 MIT License - See LICENSE file
+# BarberX
