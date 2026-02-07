@@ -13,8 +13,9 @@ import os
 import threading
 from datetime import datetime
 from pathlib import Path
+import re
 
-from flask import Flask, jsonify, render_template_string, request, send_file
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -23,6 +24,38 @@ from .bwc_forensic_analyzer import BWCForensicAnalyzer
 
 app = Flask(__name__)
 CORS(app)
+
+def _get_safe_analysis_subpath(upload_id: str) -> Path | None:
+    """
+    Resolve and validate a path under ANALYSIS_FOLDER using the given upload_id.
+
+    Returns a resolved Path if the resulting directory is within ANALYSIS_FOLDER,
+    otherwise returns None.
+    """
+    try:
+        base_dir = ANALYSIS_FOLDER.resolve()
+    except Exception:
+        return None
+
+    # Construct and resolve the candidate directory for this upload_id.
+    candidate_dir = (base_dir / upload_id).resolve()
+
+    # Ensure the resolved path is within the analysis base directory.
+    try:
+        # Python 3.9+: use is_relative_to if available
+        is_relative = candidate_dir.is_relative_to(base_dir)  # type: ignore[attr-defined]
+    except AttributeError:
+        # Fallback for older Python: check via commonpath semantics
+        try:
+            is_relative = os.path.commonpath([str(base_dir), str(candidate_dir)]) == str(base_dir)
+        except Exception:
+            return None
+
+    if not is_relative:
+        return None
+
+    return candidate_dir
+
 
 # Configuration
 UPLOAD_FOLDER = Path("./uploads/bwc_videos")
@@ -101,7 +134,7 @@ def upload_file():
 
     if not allowed_file(file.filename):
         return (
-            jsonify({"error": f'Invalid file type. Allowed: {", ".join(ALLOWED_EXTENSIONS)}'}),
+            jsonify({"error": f"Invalid file type. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"}),
             400,
         )
 
@@ -244,6 +277,30 @@ def get_status(upload_id):
     return jsonify(status_data)
 
 
+def _get_safe_output_dir(upload_id: str) -> Path:
+    """
+    Validate upload_id and return a safe, resolved output directory path
+    under ANALYSIS_FOLDER. Raises ValueError if the ID is invalid or
+    attempts to escape the analysis folder.
+    """
+    # Allow only simple, non-path characters in upload_id to prevent traversal
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", upload_id or ""):
+        raise ValueError("Invalid upload ID format")
+
+    # Find report file in a validated subdirectory
+    output_dir = _get_safe_analysis_subpath(upload_id)
+    if output_dir is None:
+        return jsonify({"error": "Invalid upload ID"}), 404
+
+    try:
+        # Ensure output_dir is within ANALYSIS_FOLDER
+        output_dir.relative_to(base)
+    except ValueError:
+        raise ValueError("Invalid upload ID path")
+
+    return output_dir
+
+
 @app.route("/api/report/<upload_id>/<format>", methods=["GET"])
 def download_report(upload_id, format):
     """Download analysis report in specified format"""
@@ -255,8 +312,11 @@ def download_report(upload_id, format):
     if status["status"] != "completed":
         return jsonify({"error": "Analysis not completed"}), 400
 
-    # Find report file
-    output_dir = ANALYSIS_FOLDER / upload_id
+    # Find report file in a validated directory
+    try:
+        output_dir = _get_safe_output_dir(upload_id)
+    except ValueError:
+        return jsonify({"error": "Invalid upload ID"}), 400
 
     if format == "json":
         report_file = output_dir / "report.json"
@@ -267,8 +327,12 @@ def download_report(upload_id, format):
     elif format == "md":
         report_file = output_dir / "report.md"
         mimetype = "text/markdown"
-    else:
+    upload_dir = _get_safe_analysis_subpath(upload_id)
+    if upload_dir is None:
+        return jsonify({"error": "Invalid upload ID"}), 404
         return jsonify({"error": "Invalid format"}), 400
+    report_file = upload_dir / "report.json"
+
 
     if not report_file.exists():
         return jsonify({"error": "Report file not found"}), 404
@@ -292,13 +356,22 @@ def get_transcript(upload_id):
     if status["status"] != "completed":
         return jsonify({"error": "Analysis not completed"}), 400
 
-    # Load JSON report
-    report_file = ANALYSIS_FOLDER / upload_id / "report.json"
+    # Load JSON report from a validated directory
+    try:
+        output_dir = _get_safe_output_dir(upload_id)
+    except ValueError:
+    upload_dir = _get_safe_analysis_subpath(upload_id)
+    if upload_dir is None:
+        return jsonify({"error": "Invalid upload ID"}), 404
+    report_file = upload_dir / "report.json"
+
+
+    report_file = output_dir / "report.json"
 
     if not report_file.exists():
         return jsonify({"error": "Report not found"}), 404
 
-    with open(report_file, "r", encoding="utf-8") as f:
+    with open(report_file, encoding="utf-8") as f:
         report_data = json.load(f)
 
     return jsonify(
@@ -327,7 +400,7 @@ def get_discrepancies(upload_id):
     if not report_file.exists():
         return jsonify({"error": "Report not found"}), 404
 
-    with open(report_file, "r", encoding="utf-8") as f:
+    with open(report_file, encoding="utf-8") as f:
         report_data = json.load(f)
 
     discrepancies = report_data.get("discrepancies", [])
@@ -369,7 +442,7 @@ def get_entities(upload_id):
     if not report_file.exists():
         return jsonify({"error": "Report not found"}), 404
 
-    with open(report_file, "r", encoding="utf-8") as f:
+    with open(report_file, encoding="utf-8") as f:
         report_data = json.load(f)
 
     return jsonify(
@@ -421,5 +494,3 @@ if __name__ == "__main__":
     )
 
     app.run(host="0.0.0.0", port=5000, debug=True, threaded=True)
-
-
