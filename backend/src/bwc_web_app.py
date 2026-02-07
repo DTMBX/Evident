@@ -295,10 +295,18 @@ def get_transcript(upload_id):
     # Load JSON report
     report_file = ANALYSIS_FOLDER / upload_id / "report.json"
 
-    if not report_file.exists():
+    # Ensure the resolved path stays within the analysis folder to prevent directory traversal
+    analysis_root = ANALYSIS_FOLDER.resolve()
+    report_file_resolved = report_file.resolve()
+    try:
+        report_file_resolved.relative_to(analysis_root)
+    except ValueError:
+        return jsonify({"error": "Invalid upload ID"}), 400
+
+    if not report_file_resolved.exists():
         return jsonify({"error": "Report not found"}), 404
 
-    with open(report_file, encoding="utf-8") as f:
+    with open(report_file_resolved, encoding="utf-8") as f:
         report_data = json.load(f)
 
     return jsonify(
