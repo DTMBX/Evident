@@ -167,32 +167,83 @@ async function uploadToGitInbox(files) {
 function showUploadProgress(files) {
   const uploadZone = document.getElementById('uploadZone');
 
-  const progressHTML = `
-    <div class="upload-progress">
-      <svg class="upload-progress-spinner" viewBox="0 0 24 24" width="48" height="48">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" 
-          stroke-dasharray="63" stroke-dashoffset="16" 
-          style="animation: spin 1s linear infinite; transform-origin: center;">
-        </circle>
-      </svg>
-      <h3>Processing ${files.length} file(s)...</h3>
-      <div class="file-list">
-        ${files
-          .map(
-            (f) => `
-          <div class="file-item">
-            <span>${f.name}</span>
-            <span>${formatFileSize(f.size)}</span>
-          </div>
-        `
-          )
-          .join('')}
-      </div>
-    </div>
-  `;
+  if (!uploadZone) {
+    return;
+  }
 
-  uploadZone.insertAdjacentHTML('afterend', `<div id="uploadResults">${progressHTML}</div>`);
+  // Create results container
+  const resultsWrapper = document.createElement('div');
+  resultsWrapper.id = 'uploadResults';
+
+  // Create upload-progress container
+  const progressContainer = document.createElement('div');
+  progressContainer.className = 'upload-progress';
+
+  // Spinner SVG
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'upload-progress-spinner');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('width', '48');
+  svg.setAttribute('height', '48');
+
+  const circleBg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circleBg.setAttribute('cx', '12');
+  circleBg.setAttribute('cy', '12');
+  circleBg.setAttribute('r', '10');
+  circleBg.setAttribute('stroke', 'currentColor');
+  circleBg.setAttribute('stroke-width', '2');
+  circleBg.setAttribute('fill', 'none');
+  circleBg.setAttribute('opacity', '0.3');
+
+  const circleFg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circleFg.setAttribute('cx', '12');
+  circleFg.setAttribute('cy', '12');
+  circleFg.setAttribute('r', '10');
+  circleFg.setAttribute('stroke', 'currentColor');
+  circleFg.setAttribute('stroke-width', '2');
+  circleFg.setAttribute('fill', 'none');
+  circleFg.setAttribute('stroke-dasharray', '63');
+  circleFg.setAttribute('stroke-dashoffset', '16');
+  circleFg.setAttribute(
+    'style',
+    'animation: spin 1s linear infinite; transform-origin: center;'
+  );
+
+  svg.appendChild(circleBg);
+  svg.appendChild(circleFg);
+
+  // Heading
+  const heading = document.createElement('h3');
+  heading.textContent = `Processing ${files.length} file(s)...`;
+
+  // File list container
+  const fileList = document.createElement('div');
+  fileList.className = 'file-list';
+
+  files.forEach((f) => {
+    const fileItem = document.createElement('div');
+    fileItem.className = 'file-item';
+
+    const nameSpan = document.createElement('span');
+    // Use textContent to avoid interpreting file names as HTML
+    nameSpan.textContent = f.name;
+
+    const sizeSpan = document.createElement('span');
+    sizeSpan.textContent = formatFileSize(f.size);
+
+    fileItem.appendChild(nameSpan);
+    fileItem.appendChild(sizeSpan);
+    fileList.appendChild(fileItem);
+  });
+
+  progressContainer.appendChild(svg);
+  progressContainer.appendChild(heading);
+  progressContainer.appendChild(fileList);
+
+  resultsWrapper.appendChild(progressContainer);
+
+  // Insert the constructed DOM after the upload zone
+  uploadZone.insertAdjacentElement('afterend', resultsWrapper);
 }
 
 function displayUploadResults(result) {
