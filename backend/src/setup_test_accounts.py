@@ -100,13 +100,13 @@ def setup_test_accounts():
             )
 
             print(f"\n{tier_emoji} {account['email']}")
-            print(f"   Password: {account['password']}")
+            print("   Password: [hidden — not logged for security]")
             print(f"   Tier:     {user.tier.name} ({user.tier_name})")
             print(f"   Admin:    {user.is_admin}")
             print(f"   Active:   {user.is_active}")
             print(f"   Verified: {user.is_verified}")
 
-            # Verify password works
+            # Verify password works without logging it
             if user.check_password(account["password"]):
                 print("   Login:    ✅ Password verified")
             else:
