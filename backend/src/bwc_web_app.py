@@ -24,6 +24,39 @@ from bwc_forensic_analyzer import BWCForensicAnalyzer
 app = Flask(__name__)
 CORS(app)
 
+
+def _safe_report_path(upload_id: str, filename: str) -> Path | None:
+    """
+    Construct a safe path to a report file for the given upload_id.
+
+    Ensures the resulting path is located within ANALYSIS_FOLDER to prevent
+    directory traversal via a malicious upload_id.
+    """
+    try:
+        base = ANALYSIS_FOLDER.resolve()
+        candidate = (ANALYSIS_FOLDER / upload_id / filename).resolve()
+    except Exception:
+        return None
+
+    try:
+        # Python 3.9+ provides is_relative_to; fall back to relative_to for older versions.
+        is_relative = candidate.is_relative_to(base)  # type: ignore[attr-defined]
+    except AttributeError:
+        try:
+            candidate.relative_to(base)
+            is_relative = True
+        except ValueError:
+            is_relative = False
+
+    if not is_relative:
+        return None
+
+   # Only allow files that are directly within the upload_id directory
+    if candidate.parent != base / upload_id:
+        return None
+
+    return candidate
+
 # Configuration
 UPLOAD_FOLDER = Path("./uploads/bwc_videos")
 ANALYSIS_FOLDER = Path("./bwc_analysis")
@@ -256,19 +289,20 @@ def download_report(upload_id, format):
         return jsonify({"error": "Analysis not completed"}), 400
 
     # Find report file
-    output_dir = ANALYSIS_FOLDER / upload_id
-
     if format == "json":
-        report_file = output_dir / "report.json"
+        report_file = _safe_report_path(upload_id, "report.json")
         mimetype = "application/json"
     elif format == "txt":
-        report_file = output_dir / "report.txt"
+        report_file = _safe_report_path(upload_id, "report.txt")
         mimetype = "text/plain"
     elif format == "md":
-        report_file = output_dir / "report.md"
+        report_file = _safe_report_path(upload_id, "report.md")
         mimetype = "text/markdown"
     else:
         return jsonify({"error": "Invalid format"}), 400
+
+    if report_file is None:
+        return jsonify({"error": "Invalid upload ID"}), 400
 
     if not report_file.exists():
         return jsonify({"error": "Report file not found"}), 404
@@ -293,7 +327,10 @@ def get_transcript(upload_id):
         return jsonify({"error": "Analysis not completed"}), 400
 
     # Load JSON report
-    base_dir = ANALYSIS_FOLDER.resolve()
+    report_file = _safe_report_path(upload_id, "report.json")
+    if report_file is None:
+        return jsonify({"error": "Invalid upload ID"}), 400
+
     report_file = (ANALYSIS_FOLDER / upload_id / "report.json").resolve()
 
     # Ensure the resolved path stays within the analysis folder
@@ -322,6 +359,9 @@ def get_discrepancies(upload_id):
     """Get all discrepancies found"""
     if upload_id not in analysis_status:
         return jsonify({"error": "Invalid upload ID"}), 404
+    report_file = _safe_report_path(upload_id, "report.json")
+    if report_file is None:
+        return jsonify({"error": "Invalid upload ID"}), 400
 
     status = analysis_status[upload_id]
 
