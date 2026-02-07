@@ -12,6 +12,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
+import logging
 
 from flask import Blueprint, Response, jsonify, request, stream_with_context
 from werkzeug.utils import secure_filename
@@ -274,7 +275,8 @@ def mark_critical_section():
         )
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.exception("Error in mark_critical_section")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # Register blueprint in main app
