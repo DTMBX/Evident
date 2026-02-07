@@ -13,6 +13,7 @@ import os
 import threading
 from datetime import datetime
 from pathlib import Path
+import re
 
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
@@ -244,6 +245,28 @@ def get_status(upload_id):
     return jsonify(status_data)
 
 
+def _get_safe_output_dir(upload_id: str) -> Path:
+    """
+    Validate upload_id and return a safe, resolved output directory path
+    under ANALYSIS_FOLDER. Raises ValueError if the ID is invalid or
+    attempts to escape the analysis folder.
+    """
+    # Allow only simple, non-path characters in upload_id to prevent traversal
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", upload_id or ""):
+        raise ValueError("Invalid upload ID format")
+
+    base = ANALYSIS_FOLDER.resolve()
+    output_dir = (base / upload_id).resolve()
+
+    try:
+        # Ensure output_dir is within ANALYSIS_FOLDER
+        output_dir.relative_to(base)
+    except ValueError:
+        raise ValueError("Invalid upload ID path")
+
+    return output_dir
+
+
 @app.route("/api/report/<upload_id>/<format>", methods=["GET"])
 def download_report(upload_id, format):
     """Download analysis report in specified format"""
@@ -255,8 +278,11 @@ def download_report(upload_id, format):
     if status["status"] != "completed":
         return jsonify({"error": "Analysis not completed"}), 400
 
-    # Find report file
-    output_dir = ANALYSIS_FOLDER / upload_id
+    # Find report file in a validated directory
+    try:
+        output_dir = _get_safe_output_dir(upload_id)
+    except ValueError:
+        return jsonify({"error": "Invalid upload ID"}), 400
 
     if format == "json":
         report_file = output_dir / "report.json"
@@ -292,8 +318,13 @@ def get_transcript(upload_id):
     if status["status"] != "completed":
         return jsonify({"error": "Analysis not completed"}), 400
 
-    # Load JSON report
-    report_file = ANALYSIS_FOLDER / upload_id / "report.json"
+    # Load JSON report from a validated directory
+    try:
+        output_dir = _get_safe_output_dir(upload_id)
+    except ValueError:
+        return jsonify({"error": "Invalid upload ID"}), 400
+
+    report_file = output_dir / "report.json"
 
     if not report_file.exists():
         return jsonify({"error": "Report not found"}), 404
