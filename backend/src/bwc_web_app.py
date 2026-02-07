@@ -368,9 +368,7 @@ def get_discrepancies(upload_id):
     if status["status"] != "completed":
         return jsonify({"error": "Analysis not completed"}), 400
 
-    # Load JSON report
-    report_file = ANALYSIS_FOLDER / upload_id / "report.json"
-
+    # Load JSON report using validated path
     if not report_file.exists():
         return jsonify({"error": "Report not found"}), 404
 
