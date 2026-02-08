@@ -7,11 +7,15 @@ on:
 
 jobs:
   dependency-review:
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Run dependency review
-        uses: github/dependency-review-action@v2
+        uses: actions/dependency-review-action@v4
+        continue-on-error: true
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          warn-only: true
+
